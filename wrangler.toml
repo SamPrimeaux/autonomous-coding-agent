@@ -1,0 +1,20 @@
+name = "autonomous-coding-agent"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+account_id = "ede6590ac0d2fb7daf155b35653457b2"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "meaux-work-db"
+database_id = "2a3a763a-92f1-4633-849e-268ddb31998f"
+
+# R2 Bucket binding
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "meaux-work-storage"
+
+# AI binding
+[ai]
+binding = "AI"
+
