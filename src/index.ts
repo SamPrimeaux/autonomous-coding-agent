@@ -59,6 +59,46 @@ interface ImageMeta {
 }
 
 const RATE_PER_HOUR_USD = 12;
+const CORE_SCHEMA = `
+CREATE TABLE IF NOT EXISTS time_entries (
+    id TEXT PRIMARY KEY,
+    started_at INTEGER NOT NULL,
+    ended_at INTEGER,
+    seconds INTEGER,
+    cost_usd REAL,
+    note TEXT
+);
+CREATE TABLE IF NOT EXISTS image_meta (
+    key TEXT PRIMARY KEY,
+    title TEXT,
+    alt TEXT,
+    tags TEXT,
+    updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+CREATE TABLE IF NOT EXISTS extracted_files (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id TEXT NOT NULL,
+    zip_id TEXT NOT NULL,
+    zip_key TEXT NOT NULL,
+    file_key TEXT NOT NULL,
+    file_name TEXT NOT NULL,
+    mime_type TEXT,
+    size_bytes INTEGER,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS optimize_jobs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    file_id INTEGER NOT NULL,
+    project_id TEXT NOT NULL,
+    zip_id TEXT NOT NULL,
+    file_key TEXT NOT NULL,
+    mode TEXT NOT NULL,
+    cloudconvert_job_id TEXT,
+    status TEXT NOT NULL DEFAULT 'requested',
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+`;
 
 export default {
     async fetch(request: Request, env: Env): Promise<Response> {
@@ -388,6 +428,7 @@ export default {
         // Time tracking: start
         if (pathname === '/api/time/start' && method === 'POST') {
             try {
+                await ensureCoreSchema(env.DB);
                 const running = await env.DB.prepare(`
                     SELECT * FROM time_entries WHERE ended_at IS NULL ORDER BY started_at DESC LIMIT 1
                 `).first<TimeEntry>();
@@ -411,6 +452,7 @@ export default {
         // Time tracking: stop
         if (pathname === '/api/time/stop' && method === 'POST') {
             try {
+                await ensureCoreSchema(env.DB);
                 const running = await env.DB.prepare(`
                     SELECT * FROM time_entries WHERE ended_at IS NULL ORDER BY started_at DESC LIMIT 1
                 `).first<TimeEntry>();
@@ -436,6 +478,7 @@ export default {
         // Time tracking: status
         if (pathname === '/api/time/status' && method === 'GET') {
             try {
+                await ensureCoreSchema(env.DB);
                 const now = Math.floor(Date.now() / 1000);
                 const running = await env.DB.prepare(`
                     SELECT * FROM time_entries WHERE ended_at IS NULL ORDER BY started_at DESC LIMIT 1
@@ -475,6 +518,7 @@ export default {
         // Images: list
         if (pathname === '/api/images' && method === 'GET') {
             try {
+                await ensureCoreSchema(env.DB);
                 const list = await env.STORAGE.list({ limit: 50 });
                 const metas: Record<string, ImageMeta> = {};
                 const keys = list.objects.map(o => o.key);
@@ -511,6 +555,7 @@ export default {
         // Images: update metadata
         if (pathname.startsWith('/api/images/') && pathname.endsWith('/metadata') && method === 'PUT') {
             try {
+                await ensureCoreSchema(env.DB);
                 const key = decodeURIComponent(pathname.replace('/api/images/', '').replace('/metadata', ''));
                 const body = await request.json() as { title?: string; alt?: string; tags?: string[] };
                 const now = Math.floor(Date.now() / 1000);
@@ -655,6 +700,15 @@ function pickR2(env: Env): R2Bucket {
 
 function pickDB(env: Env): D1Database {
     return env.MEAUX_DB || env.DB;
+}
+
+async function ensureCoreSchema(db: D1Database): Promise<void> {
+    try {
+        await db.exec(CORE_SCHEMA);
+    } catch (err) {
+        // swallow to avoid failing page render; specific calls will return error on query if needed
+        console.error('Schema ensure error:', err);
+    }
 }
 
 function guessMimeType(path: string): string {
