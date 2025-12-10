@@ -1,3 +1,5 @@
+import { unzipSync } from 'fflate';
+
 export interface Env {
     DB: D1Database;
     STORAGE: R2Bucket;
@@ -6,6 +8,13 @@ export interface Env {
     GOOGLE_API_KEY?: string;
     ANTHROPIC_API_KEY?: string;
     CLOUDFLARE_API_TOKEN?: string;
+    // Optional extended bindings for MeauxCloud pipeline
+    MEAUX_R2?: R2Bucket;
+    MEAUX_DB?: D1Database;
+    DEFAULT_PROJECT_ID?: string;
+    R2_PUBLIC_BASE_URL?: string;
+    CLOUDCONVERT_API_KEY?: string;
+    CLOUDCONVERT_API_BASE?: string;
 }
 
 interface AgentSession {
@@ -109,6 +118,29 @@ export default {
                         alt TEXT,
                         tags TEXT,
                         updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+                    );
+                    CREATE TABLE IF NOT EXISTS extracted_files (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        project_id TEXT NOT NULL,
+                        zip_id TEXT NOT NULL,
+                        zip_key TEXT NOT NULL,
+                        file_key TEXT NOT NULL,
+                        file_name TEXT NOT NULL,
+                        mime_type TEXT,
+                        size_bytes INTEGER,
+                        created_at TEXT DEFAULT (datetime('now'))
+                    );
+                    CREATE TABLE IF NOT EXISTS optimize_jobs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        file_id INTEGER NOT NULL,
+                        project_id TEXT NOT NULL,
+                        zip_id TEXT NOT NULL,
+                        file_key TEXT NOT NULL,
+                        mode TEXT NOT NULL,
+                        cloudconvert_job_id TEXT,
+                        status TEXT NOT NULL DEFAULT 'requested',
+                        created_at TEXT DEFAULT (datetime('now')),
+                        updated_at TEXT DEFAULT (datetime('now'))
                     );
                 `);
                 return jsonResponse({ success: true, message: 'Database initialized' }, corsHeaders);
@@ -505,6 +537,21 @@ export default {
             }
         }
 
+        // ZIP upload & extraction
+        if (pathname === '/api/upload-zip' && method === 'POST') {
+            return await handleUploadZip(request, env, corsHeaders);
+        }
+
+        // List extracted files
+        if (pathname === '/api/files' && method === 'GET') {
+            return await handleListExtractedFiles(request, env, corsHeaders);
+        }
+
+        // Optimize extracted file
+        if (pathname === '/api/optimize-file' && method === 'POST') {
+            return await handleOptimizeFile(request, env, corsHeaders);
+        }
+
         // Start/continue agent session
         if (pathname.startsWith('/api/sessions/') && pathname.endsWith('/run') && method === 'POST') {
             try {
@@ -558,8 +605,19 @@ export default {
             });
         }
 
+        // Serve MeauxCloud ZIP pipeline page
+        if (pathname === '/meauxcloud') {
+            const html = getMeauxCloudHTML();
+            return new Response(html, {
+                headers: {
+                    'Content-Type': 'text/html;charset=UTF-8',
+                    ...corsHeaders,
+                },
+            });
+        }
+
         const multiPagePaths = new Set([
-            '/', '/index.html', '/home', '/dashboard', '/builder', '/designs', '/assets', '/api',
+            '/', '/index.html', '/home', '/meauxcloud', '/dashboard', '/builder', '/designs', '/assets', '/api',
             '/dev', '/apps', '/dashboard/work', '/dashboard/work/projects', '/dashboard/work/board',
             '/dashboard/apps', '/dashboard/apps/photo', '/dashboard/chat', '/dashboard/chat/mail',
             '/dashboard/chat/meet', '/dashboard/auto', '/dashboard/auto/optimize', '/dashboard/dev',
@@ -591,6 +649,264 @@ function jsonResponse(data: any, headers: Record<string, string>, status = 200):
     });
 }
 
+function pickR2(env: Env): R2Bucket {
+    return env.MEAUX_R2 || env.STORAGE;
+}
+
+function pickDB(env: Env): D1Database {
+    return env.MEAUX_DB || env.DB;
+}
+
+function guessMimeType(path: string): string {
+    const lower = path.toLowerCase();
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    if (lower.endsWith('.gif')) return 'image/gif';
+    if (lower.endsWith('.svg')) return 'image/svg+xml';
+    if (lower.endsWith('.json')) return 'application/json';
+    if (lower.endsWith('.html') || lower.endsWith('.htm')) return 'text/html; charset=utf-8';
+    if (lower.endsWith('.css')) return 'text/css; charset=utf-8';
+    if (lower.endsWith('.js')) return 'text/javascript; charset=utf-8';
+    if (lower.endsWith('.pdf')) return 'application/pdf';
+    if (lower.endsWith('.mp4')) return 'video/mp4';
+    if (lower.endsWith('.mov')) return 'video/quicktime';
+    if (lower.endsWith('.mp3')) return 'audio/mpeg';
+    return 'application/octet-stream';
+}
+
+async function handleUploadZip(request: Request, env: Env, corsHeaders: Record<string, string>): Promise<Response> {
+    const contentType = request.headers.get('content-type') || '';
+    if (!contentType.includes('multipart/form-data')) {
+        return jsonResponse({ error: 'Expected multipart/form-data' }, corsHeaders, 400);
+    }
+
+    const form = await request.formData();
+    const file = form.get('file');
+    if (!(file instanceof File)) {
+        return jsonResponse({ error: 'file field missing' }, corsHeaders, 400);
+    }
+
+    const projectId = (form.get('projectId') as string) || env.DEFAULT_PROJECT_ID || 'default';
+    const zipId = crypto.randomUUID();
+    const r2 = pickR2(env);
+    const db = pickDB(env);
+
+    // Save original ZIP
+    const zipKey = `zips/${projectId}/${zipId}.zip`;
+    await r2.put(zipKey, file.stream());
+
+    // Read buffer and unzip
+    const buf = new Uint8Array(await file.arrayBuffer());
+    const entries = unzipSync(buf);
+    let fileCount = 0;
+
+    for (const [path, content] of Object.entries(entries)) {
+        if (!path || path.endsWith('/')) continue;
+        const fileKey = `unzipped/${projectId}/${zipId}/${path}`;
+        const mime = guessMimeType(path);
+        await r2.put(fileKey, content, { httpMetadata: { contentType: mime } });
+
+        await db.prepare(
+            `INSERT INTO extracted_files (project_id, zip_id, zip_key, file_key, file_name, mime_type, size_bytes)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+            projectId,
+            zipId,
+            zipKey,
+            fileKey,
+            path,
+            mime,
+            content.byteLength
+        ).run();
+
+        fileCount++;
+    }
+
+    return jsonResponse({ ok: true, projectId, zipId, zipKey, fileCount }, corsHeaders);
+}
+
+async function handleListExtractedFiles(request: Request, env: Env, corsHeaders: Record<string, string>): Promise<Response> {
+    const url = new URL(request.url);
+    const zipId = url.searchParams.get('zipId');
+    if (!zipId) return jsonResponse({ error: 'zipId is required' }, corsHeaders, 400);
+
+    const db = pickDB(env);
+    const res = await db.prepare(
+        `SELECT id, project_id, zip_id, zip_key, file_key, file_name, mime_type, size_bytes, created_at
+         FROM extracted_files
+         WHERE zip_id = ?
+         ORDER BY id ASC`
+    ).bind(zipId).all();
+
+    return jsonResponse({ ok: true, zipId, files: res.results || [] }, corsHeaders);
+}
+
+async function handleOptimizeFile(request: Request, env: Env, corsHeaders: Record<string, string>): Promise<Response> {
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body.fileId === 'undefined') {
+        return jsonResponse({ error: 'fileId is required' }, corsHeaders, 400);
+    }
+    const fileId = Number(body.fileId);
+    if (!Number.isFinite(fileId)) {
+        return jsonResponse({ error: 'fileId must be a number' }, corsHeaders, 400);
+    }
+
+    const db = pickDB(env);
+    const file = await db.prepare(
+        `SELECT id, project_id, zip_id, zip_key, file_key, file_name, mime_type, size_bytes
+         FROM extracted_files
+         WHERE id = ?`
+    ).bind(fileId).first();
+
+    if (!file) return jsonResponse({ error: 'File not found' }, corsHeaders, 404);
+
+    const publicBase = env.R2_PUBLIC_BASE_URL;
+    if (!publicBase) return jsonResponse({ error: 'R2_PUBLIC_BASE_URL not set' }, corsHeaders, 500);
+
+    const mode = (body.mode as string) || inferOptimizeMode(file.file_name, file.mime_type);
+    const sourceUrl = normalizeUrl(publicBase, file.file_key);
+    let cloudconvertJobId: string | null = null;
+    let status = 'requested';
+
+    if (mode === '3d') {
+        status = 'pending_external';
+    } else {
+        const apiKey = env.CLOUDCONVERT_API_KEY;
+        const apiBase = env.CLOUDCONVERT_API_BASE || 'https://api.cloudconvert.com';
+        if (!apiKey) return jsonResponse({ error: 'CLOUDCONVERT_API_KEY not configured' }, corsHeaders, 500);
+
+        const payload = buildCloudConvertJobPayload(sourceUrl, file, mode);
+        const ccRes = await fetch(`${apiBase}/v2/jobs`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!ccRes.ok) {
+            const errText = await ccRes.text();
+            return jsonResponse({ error: 'CloudConvert job failed', detail: errText || ccRes.statusText }, corsHeaders, 502);
+        }
+        const ccJson = await ccRes.json().catch(() => ({}));
+        cloudconvertJobId = ccJson?.data?.id || null;
+        status = 'running';
+    }
+
+    const nowIso = new Date().toISOString();
+    await db.prepare(
+        `INSERT INTO optimize_jobs (file_id, project_id, zip_id, file_key, mode, cloudconvert_job_id, status, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+        file.id,
+        file.project_id,
+        file.zip_id,
+        file.file_key,
+        mode,
+        cloudconvertJobId,
+        status,
+        nowIso,
+        nowIso
+    ).run();
+
+    await db.prepare(
+        `UPDATE extracted_files SET optimize_status = ?, optimize_mode = ? WHERE id = ?`
+    ).bind(status, mode, file.id).run();
+
+    const optimizeUrl = `/dashboard/auto/optimize?fileId=${file.id}`;
+
+    return jsonResponse({
+        ok: true,
+        fileId: file.id,
+        projectId: file.project_id,
+        zipId: file.zip_id,
+        mode,
+        status,
+        cloudconvertJobId,
+        optimizeUrl,
+    }, corsHeaders);
+}
+
+function inferOptimizeMode(name: string, mime?: string | null): string {
+    const lower = (name || '').toLowerCase();
+    const m = (mime || '').toLowerCase();
+    if (m.startsWith('image/') || /\.(png|jpg|jpeg|webp|gif)$/i.test(lower)) return 'image';
+    if (m.startsWith('video/') || /\.(mp4|mov|webm|mkv)$/i.test(lower)) return 'video';
+    if (/\.(html|htm)$/i.test(lower)) return 'html';
+    if (/\.(glb|gltf)$/i.test(lower)) return '3d';
+    return 'image';
+}
+
+function normalizeUrl(base: string, key: string): string {
+    return base.replace(/\/+$/, '') + '/' + String(key).replace(/^\/+/, '');
+}
+
+function buildCloudConvertJobPayload(sourceUrl: string, file: any, mode: string) {
+    const lower = (file.file_name || '').toLowerCase();
+    const tasks: Record<string, any> = {};
+
+    const detectExt = (fallback: string) => {
+        const m = lower.match(/\.([a-z0-9]+)$/i);
+        return m ? m[1] : fallback;
+    };
+
+    if (mode === 'image') {
+        const inputFormat = detectExt('png');
+        const outputFormat = 'webp';
+        tasks['import-file'] = { operation: 'import/url', url: sourceUrl };
+        tasks['convert-file'] = {
+            operation: 'convert',
+            input: 'import-file',
+            input_format: inputFormat,
+            output_format: outputFormat,
+            optimize: true,
+            quality: 75,
+        };
+        tasks['export-file'] = { operation: 'export/url', input: 'convert-file' };
+    } else if (mode === 'video') {
+        const inputFormat = detectExt('mp4');
+        tasks['import-file'] = { operation: 'import/url', url: sourceUrl };
+        tasks['convert-file'] = {
+            operation: 'convert',
+            input: 'import-file',
+            input_format: inputFormat,
+            output_format: 'mp4',
+            video_codec: 'x264',
+            crf: 23,
+            preset: 'medium',
+            video_bitrate: '2000k',
+            audio_bitrate: '128k',
+            optimize_streaming: true,
+        };
+        tasks['export-file'] = { operation: 'export/url', input: 'convert-file' };
+    } else if (mode === 'html') {
+        tasks['capture-web'] = {
+            operation: 'capture-website',
+            url: sourceUrl,
+            output_format: 'png',
+            viewport_width: 1920,
+            viewport_height: 1080,
+            wait_until: 'networkidle0',
+        };
+        tasks['export-file'] = { operation: 'export/url', input: 'capture-web' };
+    } else {
+        const inputFormat = detectExt('png');
+        tasks['import-file'] = { operation: 'import/url', url: sourceUrl };
+        tasks['convert-file'] = {
+            operation: 'convert',
+            input: 'import-file',
+            input_format: inputFormat,
+            output_format: 'webp',
+            optimize: true,
+            quality: 75,
+        };
+        tasks['export-file'] = { operation: 'export/url', input: 'convert-file' };
+    }
+
+    return { tasks };
+}
 function getDashboardHTML(): string {
     return `<!DOCTYPE html>
 <html lang="en">
