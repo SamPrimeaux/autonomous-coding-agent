@@ -2,7 +2,10 @@ export interface Env {
     DB: D1Database;
     STORAGE: R2Bucket;
     AI: Ai;
+    OPENAI_API_KEY?: string;
+    GOOGLE_API_KEY?: string;
     ANTHROPIC_API_KEY?: string;
+    CLOUDFLARE_API_TOKEN?: string;
 }
 
 interface AgentSession {
@@ -48,162 +51,314 @@ export default {
 
         // Initialize database
         if (pathname === '/api/init') {
-            await env.DB.exec(`
-                CREATE TABLE IF NOT EXISTS agent_sessions (
-                    id TEXT PRIMARY KEY,
-                    project_name TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'initializing',
-                    current_feature TEXT,
-                    features_completed INTEGER DEFAULT 0,
-                    features_total INTEGER DEFAULT 0,
-                    app_spec TEXT,
-                    feature_list TEXT,
-                    created_at INTEGER DEFAULT (strftime('%s', 'now')),
-                    updated_at INTEGER DEFAULT (strftime('%s', 'now'))
-                );
-                CREATE TABLE IF NOT EXISTS chat_messages (
-                    id TEXT PRIMARY KEY,
-                    session_id TEXT,
-                    role TEXT NOT NULL,
-                    content TEXT NOT NULL,
-                    timestamp INTEGER DEFAULT (strftime('%s', 'now')),
-                    FOREIGN KEY (session_id) REFERENCES agent_sessions(id)
-                );
-                CREATE INDEX IF NOT EXISTS idx_status ON agent_sessions(status);
-                CREATE INDEX IF NOT EXISTS idx_project_name ON agent_sessions(project_name);
-                CREATE INDEX IF NOT EXISTS idx_session_id ON chat_messages(session_id);
-            `);
-            return jsonResponse({ success: true, message: 'Database initialized' }, corsHeaders);
+            try {
+                await env.DB.exec(`
+                    CREATE TABLE IF NOT EXISTS agent_sessions (
+                        id TEXT PRIMARY KEY,
+                        project_name TEXT NOT NULL,
+                        status TEXT NOT NULL DEFAULT 'initializing',
+                        current_feature TEXT,
+                        features_completed INTEGER DEFAULT 0,
+                        features_total INTEGER DEFAULT 0,
+                        app_spec TEXT,
+                        feature_list TEXT,
+                        created_at INTEGER DEFAULT (strftime('%s', 'now')),
+                        updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+                    );
+                    CREATE TABLE IF NOT EXISTS chat_messages (
+                        id TEXT PRIMARY KEY,
+                        session_id TEXT,
+                        role TEXT NOT NULL,
+                        content TEXT NOT NULL,
+                        timestamp INTEGER DEFAULT (strftime('%s', 'now')),
+                        FOREIGN KEY (session_id) REFERENCES agent_sessions(id)
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_status ON agent_sessions(status);
+                    CREATE INDEX IF NOT EXISTS idx_project_name ON agent_sessions(project_name);
+                    CREATE INDEX IF NOT EXISTS idx_session_id ON chat_messages(session_id);
+                `);
+                return jsonResponse({ success: true, message: 'Database initialized' }, corsHeaders);
+            } catch (error: any) {
+                return jsonResponse({ success: false, error: error.message }, corsHeaders, 500);
+            }
         }
 
         // Create new agent session
         if (pathname === '/api/sessions' && method === 'POST') {
-            const body = await request.json() as AgentRequest;
-            const id = crypto.randomUUID();
-            const now = Math.floor(Date.now() / 1000);
+            try {
+                const body = await request.json() as AgentRequest;
+                const id = crypto.randomUUID();
+                const now = Math.floor(Date.now() / 1000);
 
-            if (!body.project_name) {
-                return jsonResponse({ error: 'project_name is required' }, corsHeaders, 400);
+                if (!body.project_name) {
+                    return jsonResponse({ error: 'project_name is required' }, corsHeaders, 400);
+                }
+
+                await env.DB.prepare(`
+                    INSERT INTO agent_sessions (id, project_name, status, app_spec, features_total, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                `).bind(
+                    id,
+                    body.project_name,
+                    'initializing',
+                    body.app_spec || '',
+                    body.feature_list?.length || 0,
+                    now,
+                    now
+                ).run();
+
+                // Store feature list in R2
+                if (body.feature_list && body.feature_list.length > 0) {
+                    await env.STORAGE.put(
+                        `agent-sessions/${id}/feature_list.json`,
+                        JSON.stringify(body.feature_list),
+                        {
+                            httpMetadata: { contentType: 'application/json' },
+                        }
+                    );
+                }
+
+                return jsonResponse({ success: true, session_id: id }, corsHeaders);
+            } catch (error: any) {
+                return jsonResponse({ error: error.message || 'Failed to create session' }, corsHeaders, 500);
             }
-
-            await env.DB.prepare(`
-                INSERT INTO agent_sessions (id, project_name, status, app_spec, features_total, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            `).bind(
-                id,
-                body.project_name,
-                'initializing',
-                body.app_spec || '',
-                body.feature_list?.length || 0,
-                now,
-                now
-            ).run();
-
-            // Store feature list in R2
-            if (body.feature_list && body.feature_list.length > 0) {
-                await env.STORAGE.put(
-                    `agent-sessions/${id}/feature_list.json`,
-                    JSON.stringify(body.feature_list),
-                    {
-                        httpMetadata: { contentType: 'application/json' },
-                    }
-                );
-            }
-
-            return jsonResponse({ success: true, session_id: id }, corsHeaders);
         }
 
         // Get all sessions
         if (pathname === '/api/sessions' && method === 'GET') {
-            const result = await env.DB.prepare('SELECT * FROM agent_sessions ORDER BY created_at DESC')
-                .all<AgentSession>();
-            return jsonResponse({ sessions: result.results || [] }, corsHeaders);
+            try {
+                const result = await env.DB.prepare('SELECT * FROM agent_sessions ORDER BY created_at DESC')
+                    .all<AgentSession>();
+                return jsonResponse({ sessions: result.results || [] }, corsHeaders);
+            } catch (error: any) {
+                return jsonResponse({ error: error.message || 'Failed to load sessions' }, corsHeaders, 500);
+            }
         }
 
         // Get single session
-        if (pathname.startsWith('/api/sessions/') && method === 'GET') {
-            const id = pathname.split('/api/sessions/')[1];
-            const session = await env.DB.prepare('SELECT * FROM agent_sessions WHERE id = ?')
-                .bind(id)
-                .first<AgentSession>();
-
-            if (!session) {
-                return jsonResponse({ error: 'Session not found' }, corsHeaders, 404);
-            }
-
-            // Get feature list from R2
-            let featureList = null;
+        if (pathname.startsWith('/api/sessions/') && method === 'GET' && !pathname.includes('/messages') && !pathname.includes('/chat') && !pathname.includes('/run')) {
             try {
-                const featureListObj = await env.STORAGE.get(`agent-sessions/${id}/feature_list.json`);
-                if (featureListObj) {
-                    featureList = JSON.parse(await featureListObj.text());
-                }
-            } catch (e) {
-                // Feature list not found, that's okay
-            }
+                const id = pathname.split('/api/sessions/')[1];
+                const session = await env.DB.prepare('SELECT * FROM agent_sessions WHERE id = ?')
+                    .bind(id)
+                    .first<AgentSession>();
 
-            return jsonResponse({ session: { ...session, feature_list: featureList } }, corsHeaders);
+                if (!session) {
+                    return jsonResponse({ error: 'Session not found' }, corsHeaders, 404);
+                }
+
+                // Get feature list from R2
+                let featureList = null;
+                try {
+                    const featureListObj = await env.STORAGE.get(`agent-sessions/${id}/feature_list.json`);
+                    if (featureListObj) {
+                        featureList = JSON.parse(await featureListObj.text());
+                    }
+                } catch (e) {
+                    // Feature list not found, that's okay
+                }
+
+                return jsonResponse({ session: { ...session, feature_list: featureList } }, corsHeaders);
+            } catch (error: any) {
+                return jsonResponse({ error: error.message || 'Failed to load session' }, corsHeaders, 500);
+            }
         }
 
         // Get chat messages for session
         if (pathname.startsWith('/api/sessions/') && pathname.endsWith('/messages') && method === 'GET') {
-            const id = pathname.split('/api/sessions/')[1].replace('/messages', '');
-            const messages = await env.DB.prepare(`
-                SELECT * FROM chat_messages WHERE session_id = ? ORDER BY timestamp ASC
-            `).bind(id).all<ChatMessage>();
-            return jsonResponse({ messages: messages.results || [] }, corsHeaders);
+            try {
+                const id = pathname.split('/api/sessions/')[1].replace('/messages', '');
+                const messages = await env.DB.prepare(`
+                    SELECT * FROM chat_messages WHERE session_id = ? ORDER BY timestamp ASC
+                `).bind(id).all<ChatMessage>();
+                return jsonResponse({ messages: messages.results || [] }, corsHeaders);
+            } catch (error: any) {
+                return jsonResponse({ error: error.message || 'Failed to load messages' }, corsHeaders, 500);
+            }
         }
 
         // Send chat message
         if (pathname.startsWith('/api/sessions/') && pathname.endsWith('/chat') && method === 'POST') {
-            const id = pathname.split('/api/sessions/')[1].replace('/chat', '');
-            const body = await request.json() as { message: string };
-            
-            const messageId = crypto.randomUUID();
-            const now = Math.floor(Date.now() / 1000);
+            try {
+                const id = pathname.split('/api/sessions/')[1].replace('/chat', '');
+                const body = await request.json() as { message: string };
 
-            // Save user message
-            await env.DB.prepare(`
-                INSERT INTO chat_messages (id, session_id, role, content, timestamp)
-                VALUES (?, ?, ?, ?, ?)
-            `).bind(messageId, id, 'user', body.message, now).run();
+                if (!body.message) {
+                    return jsonResponse({ error: 'message is required' }, corsHeaders, 400);
+                }
 
-            // TODO: Process with Claude API and save assistant response
-            // For now, return a placeholder response
-            const assistantId = crypto.randomUUID();
-            await env.DB.prepare(`
-                INSERT INTO chat_messages (id, session_id, role, content, timestamp)
-                VALUES (?, ?, ?, ?, ?)
-            `).bind(assistantId, id, 'assistant', 'I received your message. Claude API integration coming soon!', now + 1).run();
+                const messageId = crypto.randomUUID();
+                const now = Math.floor(Date.now() / 1000);
 
-            return jsonResponse({ success: true, message_id: assistantId }, corsHeaders);
+                // Save user message
+                await env.DB.prepare(`
+                    INSERT INTO chat_messages (id, session_id, role, content, timestamp)
+                    VALUES (?, ?, ?, ?, ?)
+                `).bind(messageId, id, 'user', body.message, now).run();
+
+                // Get session context
+                const session = await env.DB.prepare('SELECT * FROM agent_sessions WHERE id = ?')
+                    .bind(id)
+                    .first<AgentSession>();
+
+                // Get recent chat history for context
+                const recentMessages = await env.DB.prepare(`
+                    SELECT role, content FROM chat_messages 
+                    WHERE session_id = ? 
+                    ORDER BY timestamp DESC 
+                    LIMIT 10
+                `).bind(id).all<{ role: string; content: string }>();
+
+                // Process with AI (try Cloudflare AI first, then OpenAI, then Anthropic)
+                let assistantResponse = 'I received your message. Processing with AI...';
+
+                try {
+                    // Try Cloudflare Workers AI
+                    if (env.AI) {
+                        const messages = [
+                            ...recentMessages.results.reverse().map(m => ({
+                                role: m.role === 'user' ? 'user' : 'assistant',
+                                content: m.content
+                            })),
+                            { role: 'user' as const, content: body.message }
+                        ];
+
+                        const response = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+                            messages: messages,
+                            max_tokens: 1000
+                        });
+
+                        if (response && typeof response === 'object' && 'response' in response) {
+                            assistantResponse = String(response.response);
+                        } else if (typeof response === 'string') {
+                            assistantResponse = response;
+                        }
+                    }
+                } catch (cfError) {
+                    console.error('Cloudflare AI error:', cfError);
+
+                    // Fallback to OpenAI
+                    if (env.OPENAI_API_KEY) {
+                        try {
+                            const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${env.OPENAI_API_KEY}`
+                                },
+                                body: JSON.stringify({
+                                    model: 'gpt-4',
+                                    messages: [
+                                        ...recentMessages.results.reverse().map(m => ({
+                                            role: m.role === 'user' ? 'user' : 'assistant',
+                                            content: m.content
+                                        })),
+                                        { role: 'user', content: body.message }
+                                    ],
+                                    max_tokens: 1000
+                                })
+                            });
+
+                            if (openaiResponse.ok) {
+                                const data = await openaiResponse.json();
+                                assistantResponse = data.choices[0]?.message?.content || assistantResponse;
+                            }
+                        } catch (openaiError) {
+                            console.error('OpenAI error:', openaiError);
+
+                            // Fallback to Anthropic
+                            if (env.ANTHROPIC_API_KEY) {
+                                try {
+                                    const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'x-api-key': env.ANTHROPIC_API_KEY,
+                                            'anthropic-version': '2023-06-01'
+                                        },
+                                        body: JSON.stringify({
+                                            model: 'claude-3-5-sonnet-20241022',
+                                            max_tokens: 1000,
+                                            messages: [
+                                                ...recentMessages.results.reverse().map(m => ({
+                                                    role: m.role === 'user' ? 'user' : 'assistant',
+                                                    content: m.content
+                                                })),
+                                                { role: 'user', content: body.message }
+                                            ]
+                                        })
+                                    });
+
+                                    if (anthropicResponse.ok) {
+                                        const data = await anthropicResponse.json();
+                                        assistantResponse = data.content[0]?.text || assistantResponse;
+                                    }
+                                } catch (anthropicError) {
+                                    console.error('Anthropic error:', anthropicError);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Save assistant response
+                const assistantId = crypto.randomUUID();
+                await env.DB.prepare(`
+                    INSERT INTO chat_messages (id, session_id, role, content, timestamp)
+                    VALUES (?, ?, ?, ?, ?)
+                `).bind(assistantId, id, 'assistant', assistantResponse, now + 1).run();
+
+                return jsonResponse({
+                    success: true,
+                    message_id: assistantId,
+                    response: assistantResponse
+                }, corsHeaders);
+            } catch (error: any) {
+                console.error('Chat error:', error);
+                return jsonResponse({ error: error.message || 'Failed to process chat message' }, corsHeaders, 500);
+            }
         }
 
         // Start/continue agent session
         if (pathname.startsWith('/api/sessions/') && pathname.endsWith('/run') && method === 'POST') {
-            const id = pathname.split('/api/sessions/')[1].replace('/run', '');
-            const session = await env.DB.prepare('SELECT * FROM agent_sessions WHERE id = ?')
-                .bind(id)
-                .first<AgentSession>();
+            try {
+                const id = pathname.split('/api/sessions/')[1].replace('/run', '');
+                const session = await env.DB.prepare('SELECT * FROM agent_sessions WHERE id = ?')
+                    .bind(id)
+                    .first<AgentSession>();
 
-            if (!session) {
-                return jsonResponse({ error: 'Session not found' }, corsHeaders, 404);
+                if (!session) {
+                    return jsonResponse({ error: 'Session not found' }, corsHeaders, 404);
+                }
+
+                // Update status to coding
+                await env.DB.prepare(`
+                    UPDATE agent_sessions SET status = ?, updated_at = ? WHERE id = ?
+                `).bind('coding', Math.floor(Date.now() / 1000), id).run();
+
+                const response = {
+                    success: true,
+                    message: 'Agent session started',
+                    session_id: id,
+                    status: 'coding',
+                    note: 'Agent is working on the project. Check status endpoint for updates.',
+                };
+
+                return jsonResponse(response, corsHeaders);
+            } catch (error: any) {
+                return jsonResponse({ error: error.message || 'Failed to start session' }, corsHeaders, 500);
             }
+        }
 
-            // Update status to coding
-            await env.DB.prepare(`
-                UPDATE agent_sessions SET status = ?, updated_at = ? WHERE id = ?
-            `).bind('coding', Math.floor(Date.now() / 1000), id).run();
-
-            const response = {
-                success: true,
-                message: 'Agent session started',
-                session_id: id,
-                status: 'coding',
-                note: 'Agent is working on the project. Check status endpoint for updates.',
-            };
-
-            return jsonResponse(response, corsHeaders);
+        // Test API keys endpoint
+        if (pathname === '/api/test-keys' && method === 'GET') {
+            return jsonResponse({
+                hasOpenAI: !!env.OPENAI_API_KEY,
+                hasGoogle: !!env.GOOGLE_API_KEY,
+                hasAnthropic: !!env.ANTHROPIC_API_KEY,
+                hasCloudflareAI: !!env.AI,
+                hasCloudflareToken: !!env.CLOUDFLARE_API_TOKEN
+            }, corsHeaders);
         }
 
         // Serve HTML dashboard
@@ -714,6 +869,16 @@ function getDashboardHTML(): string {
             resize: vertical;
         }
         
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.875rem;
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -803,6 +968,10 @@ function getDashboardHTML(): string {
                 <div class="nav-item" onclick="initDB()">
                     <div class="nav-icon">🔧</div>
                     <span>Initialize DB</span>
+                </div>
+                <div class="nav-item" onclick="testAPIKeys()">
+                    <div class="nav-icon">🔑</div>
+                    <span>Test API Keys</span>
                 </div>
             </div>
         </div>
@@ -972,13 +1141,22 @@ function getDashboardHTML(): string {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ message })
                     });
+                    
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error('API error: ' + errorText);
+                    }
+                    
                     const data = await res.json();
-                    if (res.ok) {
+                    if (data.response) {
+                        addChatMessage('assistant', data.response);
+                    } else {
                         // Load updated messages
-                        loadChatMessages(currentSessionId);
+                        await loadChatMessages(currentSessionId);
                     }
                 } catch (error) {
-                    addChatMessage('assistant', 'Error sending message: ' + error.message);
+                    console.error('Chat error:', error);
+                    addChatMessage('assistant', 'Error: ' + error.message);
                 }
             } else {
                 addChatMessage('assistant', 'Please select or create a project first to start chatting with the agent.');
@@ -1000,6 +1178,9 @@ function getDashboardHTML(): string {
         async function loadChatMessages(sessionId) {
             try {
                 const res = await fetch('/api/sessions/' + sessionId + '/messages');
+                if (!res.ok) {
+                    throw new Error('Failed to load messages');
+                }
                 const data = await res.json();
                 const messages = document.getElementById('chatMessages');
                 messages.innerHTML = '';
@@ -1023,10 +1204,24 @@ function getDashboardHTML(): string {
             }
         }
 
+        // Test API Keys
+        async function testAPIKeys() {
+            try {
+                const res = await fetch('/api/test-keys');
+                const data = await res.json();
+                alert(\`API Keys Status:\\n\\nOpenAI: \${data.hasOpenAI ? '✅' : '❌'}\\nGoogle: \${data.hasGoogle ? '✅' : '❌'}\\nAnthropic: \${data.hasAnthropic ? '✅' : '❌'}\\nCloudflare AI: \${data.hasCloudflareAI ? '✅' : '❌'}\\nCloudflare Token: \${data.hasCloudflareToken ? '✅' : '❌'}\`);
+            } catch (error) {
+                alert('Error testing API keys: ' + error.message);
+            }
+        }
+
         // Session management
         async function loadSessions() {
             try {
                 const res = await fetch('/api/sessions');
+                if (!res.ok) {
+                    throw new Error('Failed to load sessions');
+                }
                 const data = await res.json();
                 const previewContent = document.getElementById('previewContent');
                 
@@ -1061,6 +1256,12 @@ function getDashboardHTML(): string {
                 }
             } catch (error) {
                 console.error('Error loading sessions:', error);
+                const previewContent = document.getElementById('previewContent');
+                previewContent.innerHTML = \`
+                    <div class="error-message">
+                        Error loading sessions: \${error.message}
+                    </div>
+                \`;
             }
         }
 
@@ -1074,6 +1275,9 @@ function getDashboardHTML(): string {
             currentSessionId = sessionId;
             try {
                 const res = await fetch('/api/sessions/' + sessionId);
+                if (!res.ok) {
+                    throw new Error('Failed to load session');
+                }
                 const data = await res.json();
                 const session = data.session;
                 
@@ -1125,17 +1329,20 @@ function getDashboardHTML(): string {
                     })
                 });
 
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText);
+                }
+
                 const data = await res.json();
-                if (res.ok) {
+                if (data.session_id) {
                     closeModal();
                     document.getElementById('projectName').value = '';
                     document.getElementById('appSpec').value = '';
                     loadSessions();
-                    if (data.session_id) {
-                        setTimeout(() => selectSession(data.session_id), 500);
-                    }
+                    setTimeout(() => selectSession(data.session_id), 500);
                 } else {
-                    alert('Error: ' + (data.error || 'Failed to create session'));
+                    throw new Error('No session ID returned');
                 }
             } catch (error) {
                 alert('Error: ' + error.message);
