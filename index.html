@@ -2,2219 +2,2733 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Meaux Access - Team Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Coding Agent - AutoMeaux</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+
+
         * {
+
             margin: 0;
+
             padding: 0;
+
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+
         }
+
+
 
         :root {
-            --primary: #1F97A9;
-            --primary-dark: #186F7D;
-            --primary-light: #26B4C9;
-            --accent: #FF7619;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+
+            --bg-primary: #0a0e1a;
+
+            --bg-secondary: #060911;
+
+            --surface: rgba(20, 28, 46, 0.95);
+
+            --surface-elevated: rgba(30, 40, 64, 0.95);
+
+            --surface-hover: rgba(40, 50, 80, 0.6);
+
+            --accent-teal: #3dd9d0;
+
+            --accent-mint: #7de3cb;
+
+            --text-primary: #e8eef7;
+
+            --text-secondary: #a0aec0;
+
+            --text-tertiary: #6b7280;
+
+            --border: rgba(255, 255, 255, 0.1);
+
+            --border-hover: rgba(61, 217, 208, 0.3);
+
+            --success: #34d399;
+
+            --warning: #fbbf24;
+
+            --error: #ef4444;
+
+            --info: #60a5fa;
+
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+
         }
+
+
+
+        [data-theme="light"] {
+
+            --bg-primary: #f8fafc;
+
+            --bg-secondary: #ffffff;
+
+            --surface: rgba(255, 255, 255, 0.95);
+
+            --surface-elevated: rgba(248, 250, 252, 0.95);
+
+            --surface-hover: rgba(241, 245, 249, 0.8);
+
+            --text-primary: #0f172a;
+
+            --text-secondary: #475569;
+
+            --text-tertiary: #94a3b8;
+
+            --border: rgba(0, 0, 0, 0.08);
+
+            --border-hover: rgba(61, 217, 208, 0.4);
+
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+        }
+
+
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
+
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+
+            color: var(--text-primary);
+
+            min-height: 100vh;
+
+            transition: background 0.3s ease;
+
         }
+
+
+
+        ::-webkit-scrollbar { width: 6px; }
+
+        ::-webkit-scrollbar-track { background: transparent; }
+
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+
+
+        .layout { display: flex; min-height: 100vh; }
+
+
 
         /* Header */
+
         .header {
+
             position: fixed;
+
             top: 0;
+
             left: 0;
+
             right: 0;
-            height: 64px;
-            background: white;
+
+            height: 60px;
+
+            background: var(--surface);
+
+            backdrop-filter: blur(20px);
+
             border-bottom: 1px solid var(--border);
-            z-index: 1000;
+
+            z-index: 100;
+
             display: flex;
+
             align-items: center;
-            padding: 0 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+            padding: 0 1rem;
+
         }
+
+
 
         .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+
             width: 100%;
+
+            max-width: 1600px;
+
+            margin: 0 auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
         }
+
+
+
+        .header-left { display: flex; align-items: center; gap: 1rem; }
+
+
 
         .hamburger {
-            width: 44px;
-            height: 44px;
-            border: none;
+
+            width: 40px;
+
+            height: 40px;
+
             background: none;
+
+            border: none;
+
             cursor: pointer;
+
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
+
             justify-content: center;
+
             gap: 5px;
-            padding: 10px;
-        }
 
-        .hamburger span {
-            width: 24px;
-            height: 2px;
-            background: var(--text);
-            border-radius: 2px;
+            padding: 8px;
+
+            border-radius: 8px;
+
             transition: all 0.3s ease;
+
         }
 
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(7px) rotate(45deg);
+
+
+        .hamburger:hover { background: var(--surface-hover); }
+
+
+
+        .hamburger-line {
+
+            width: 24px;
+
+            height: 2.5px;
+
+            background: var(--text-primary);
+
+            border-radius: 2px;
+
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
         }
 
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
 
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-7px) rotate(-45deg);
-        }
+
+        .hamburger.active .hamburger-line:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+
+        .hamburger.active .hamburger-line:nth-child(2) { opacity: 0; transform: translateX(-10px); }
+
+        .hamburger.active .hamburger-line:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            justify-content: center;
-        }
 
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+            font-size: 1.125rem;
+
             font-weight: 700;
-            font-size: 16px;
-            box-shadow: 0 4px 12px rgba(31, 151, 169, 0.3);
+
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+
         }
 
-        .logo-text h1 {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text);
-        }
 
-        .header-notification {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: none;
-            background: transparent;
+
+        .header-right { display: flex; align-items: center; gap: 0.75rem; }
+
+
+
+        .agent-toolbox {
+
+            position: fixed;
+
+            bottom: 1.5rem;
+
+            left: 1.5rem;
+
+            width: 64px;
+
+            height: 64px;
+
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.95) 0%, rgba(139, 92, 246, 0.95) 100%);
+
+            backdrop-filter: blur(24px) saturate(180%);
+
+            border: 2px solid rgba(255, 255, 255, 0.25);
+
+            border-radius: 20px;
+
             cursor: pointer;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
-            transition: all 0.2s;
-            position: relative;
+
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            z-index: 9999;
+
+            box-shadow: 0 12px 40px rgba(167, 139, 250, 0.4), 
+                        0 0 0 0 rgba(167, 139, 250, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+            animation: pulse-glow 3s ease-in-out infinite;
+            pointer-events: auto;
+
         }
 
-        .header-notification:hover {
-            background: var(--bg);
+
+
+        @keyframes pulse-glow {
+
+            0%, 100% { 
+                box-shadow: 0 12px 40px rgba(167, 139, 250, 0.4), 
+                            0 0 0 0 rgba(167, 139, 250, 0.5),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            }
+
+            50% { 
+                box-shadow: 0 16px 48px rgba(167, 139, 250, 0.6), 
+                            0 0 0 12px rgba(167, 139, 250, 0.25),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            }
+
         }
 
-        .notification-dot {
+
+
+        .agent-toolbox:hover { 
+
+            background: linear-gradient(135deg, rgba(196, 181, 253, 0.98) 0%, rgba(167, 139, 250, 0.98) 100%);
+
+            box-shadow: 0 20px 60px rgba(167, 139, 250, 0.6), 
+                        0 0 0 16px rgba(167, 139, 250, 0.2),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+            transform: scale(1.1) translateY(-2px);
+
+            animation: none;
+            border-color: rgba(255, 255, 255, 0.35);
+
+        }
+
+
+
+        .agent-toolbox.active {
+
+            background: linear-gradient(135deg, rgba(167, 139, 250, 1) 0%, rgba(139, 92, 246, 1) 100%);
+
+            box-shadow: 0 16px 48px rgba(167, 139, 250, 0.6), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+            animation: none;
+            border-color: rgba(255, 255, 255, 0.4);
+
+        }
+
+
+
+        .toolbox-icon { 
+
+            width: 32px; 
+
+            height: 32px; 
+
+            stroke: white; 
+
+            fill: white;
+
+            stroke-width: 1.5;
+
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+
+        }
+
+
+
+        .agent-toolbox:hover .toolbox-icon {
+
+            transform: scale(1.1);
+
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+
+        }
+
+
+
+        .agent-toolbox.active .toolbox-icon {
+
+            transform: rotate(180deg) scale(1.05);
+
+        }
+
+
+
+        .agent-badge {
+
             position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
+
+            top: -4px;
+
+            right: -4px;
+
+            width: 22px;
+
+            height: 22px;
+
+            background: linear-gradient(135deg, #3dd9d0 0%, #0d9488 100%);
+
+            border: 2.5px solid rgba(255, 255, 255, 0.95);
+
             border-radius: 50%;
-            border: 2px solid white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 0.625rem;
+
+            font-weight: 800;
+
+            color: white;
+
+            box-shadow: 0 4px 12px rgba(61, 217, 208, 0.5);
+
+            animation: badge-pulse 2s ease-in-out infinite;
+
         }
+
+
+
+        @keyframes badge-pulse {
+
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(61, 217, 208, 0.5); }
+
+            50% { transform: scale(1.1); box-shadow: 0 6px 16px rgba(61, 217, 208, 0.7); }
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .agent-toolbox {
+
+                bottom: 5rem;
+
+                width: 52px;
+
+                height: 52px;
+
+                left: 1rem;
+
+            }
+
+        }
+
+
+
+        /* Mobile Bottom Navigation */
+
+        .mobile-bottom-nav {
+
+            display: none;
+
+            position: fixed;
+
+            bottom: 0;
+
+            left: 0;
+
+            right: 0;
+
+            height: 64px;
+
+            background: rgba(20, 28, 46, 0.95);
+
+            backdrop-filter: blur(20px) saturate(180%);
+
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+            z-index: 100;
+
+            padding: 0 1rem;
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .mobile-bottom-nav {
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: space-around;
+
+            }
+
+
+
+            .main-wrapper {
+
+                padding-bottom: 64px;
+
+            }
+
+        }
+
+
+
+        .mobile-nav-item {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 0.5rem;
+
+            color: var(--text-secondary);
+
+            text-decoration: none;
+
+            transition: all 0.2s ease;
+
+            border-radius: 12px;
+
+            flex: 1;
+
+            max-width: 80px;
+
+            gap: 0.25rem;
+
+        }
+
+
+
+        .mobile-nav-item.active {
+
+            color: var(--accent-teal);
+
+            background: rgba(61, 217, 208, 0.1);
+
+        }
+
+
+
+        .mobile-nav-item:active {
+
+            transform: scale(0.95);
+
+        }
+
+
+
+        .mobile-nav-icon {
+
+            width: 24px;
+
+            height: 24px;
+
+            stroke: currentColor;
+
+            fill: none;
+
+            stroke-width: 2;
+
+            margin-bottom: 0.125rem;
+
+        }
+
+
+
+        .mobile-nav-label {
+
+            font-size: 0.688rem;
+
+            font-weight: 500;
+
+            white-space: nowrap;
+
+        }
+
+
+
+        .mobile-nav-menu {
+
+            width: 24px;
+
+            height: 24px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            gap: 3px;
+
+            margin-bottom: 0.125rem;
+
+        }
+
+
+
+        .mobile-nav-menu-line {
+
+            width: 18px;
+
+            height: 2px;
+
+            background: currentColor;
+
+            border-radius: 2px;
+
+            transition: all 0.3s ease;
+
+            margin: 0 auto;
+
+        }
+
+
+
+        .mobile-nav-item.active .mobile-nav-menu-line:nth-child(1) {
+
+            width: 12px;
+
+        }
+
+
+
+        .mobile-nav-item.active .mobile-nav-menu-line:nth-child(3) {
+
+            width: 12px;
+
+        }
+
+
+
+        /* Clean Footer Navigation */
+
+        .footer-nav {
+
+            position: fixed;
+
+            bottom: 0;
+
+            left: 0;
+
+            right: 0;
+
+            height: 72px;
+
+            background: rgba(20, 28, 46, 0.98);
+
+            backdrop-filter: blur(30px) saturate(180%);
+
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+            z-index: 99;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 0 2rem;
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .footer-nav {
+
+                display: none;
+
+            }
+
+        }
+
+
+
+        .footer-nav-container {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0;
+
+            max-width: 1200px;
+
+            width: 100%;
+
+            justify-content: center;
+
+        }
+
+
+
+        .footer-nav-item {
+
+            flex: 1;
+
+            max-width: 280px;
+
+            height: 56px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 0.875rem;
+
+            color: var(--text-secondary);
+
+            text-decoration: none;
+
+            position: relative;
+
+            border-radius: 12px;
+
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            padding: 0 1.5rem;
+
+        }
+
+
+
+        .footer-nav-item::before {
+
+            content: '';
+
+            position: absolute;
+
+            bottom: 0;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: 0;
+
+            height: 3px;
+
+            background: linear-gradient(90deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
+            border-radius: 3px 3px 0 0;
+
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        }
+
+
+
+        .footer-nav-item:hover {
+
+            background: rgba(255, 255, 255, 0.03);
+
+            color: var(--text-primary);
+
+        }
+
+
+
+        .footer-nav-item:hover::before {
+
+            width: 80%;
+
+        }
+
+
+
+        .footer-nav-item.active {
+
+            color: var(--accent-teal);
+
+            background: rgba(61, 217, 208, 0.08);
+
+        }
+
+
+
+        .footer-nav-item.active::before {
+
+            width: 80%;
+
+        }
+
+
+
+        .footer-nav-icon-wrapper {
+
+            width: 40px;
+
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.05);
+
+            transition: all 0.3s ease;
+
+            position: relative;
+
+        }
+
+
+
+        .footer-nav-item:hover .footer-nav-icon-wrapper {
+
+            background: rgba(61, 217, 208, 0.15);
+
+            transform: translateY(-2px);
+
+        }
+
+
+
+        .footer-nav-item.active .footer-nav-icon-wrapper {
+
+            background: linear-gradient(135deg, rgba(61, 217, 208, 0.2) 0%, rgba(125, 227, 203, 0.2) 100%);
+
+        }
+
+
+
+        .footer-nav-icon {
+
+            width: 22px;
+
+            height: 22px;
+
+            stroke: currentColor;
+
+            fill: none;
+
+            stroke-width: 2.5;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .footer-nav-item.active .footer-nav-icon {
+
+            stroke-width: 2.8;
+
+        }
+
+
+
+        .footer-nav-text {
+
+            font-size: 0.938rem;
+
+            font-weight: 500;
+
+            white-space: nowrap;
+
+            transition: all 0.2s ease;
+
+        }
+
+
+
+        .footer-nav-item.active .footer-nav-text {
+
+            font-weight: 600;
+
+        }
+
+
+
+        .footer-nav-badge {
+
+            position: absolute;
+
+            top: -2px;
+
+            right: -2px;
+
+            width: 8px;
+
+            height: 8px;
+
+            background: var(--accent-teal);
+
+            border-radius: 50%;
+
+            border: 2px solid rgba(20, 28, 46, 0.98);
+
+        }
+
+
+
+        /* Adjust main content for footer */
+
+        @media (min-width: 769px) {
+
+            .main-wrapper {
+
+                padding-bottom: 88px;
+
+            }
+
+        }
+
+
+
+        .status-pill {
+
+            display: none;
+
+            align-items: center;
+
+            gap: 0.5rem;
+
+            padding: 0.5rem 1rem;
+
+            background: var(--surface-elevated);
+
+            border: 1px solid var(--border);
+
+            border-radius: 20px;
+
+            font-size: 0.813rem;
+
+            font-weight: 500;
+
+            color: var(--text-secondary);
+
+        }
+
+
+
+        @media (min-width: 769px) { .status-pill { display: flex; } }
+
+
+
+        .status-dot {
+
+            width: 8px;
+
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: var(--success);
+
+            animation: pulse 2s infinite;
+
+        }
+
+
+
+        @keyframes pulse {
+
+            0%, 100% { opacity: 1; }
+
+            50% { opacity: 0.6; }
+
+        }
+
+
+
+        /* Overlay */
+
+        .overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            top: 60px;
+
+            background: rgba(0, 0, 0, 0.6);
+
+            backdrop-filter: blur(4px);
+
+            z-index: 98;
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .overlay.active { opacity: 1; visibility: visible; }
+
+
 
         /* Sidebar */
+
         .sidebar {
+
             position: fixed;
+
             left: 0;
-            top: 64px;
+
+            top: 60px;
+
             bottom: 0;
+
             width: 280px;
-            background: white;
+
+            background: var(--surface);
+
             border-right: 1px solid var(--border);
-            overflow-y: auto;
-            padding: 20px 0 0 0;
+
+            z-index: 99;
+
             transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 999;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            overflow-y: auto;
+
         }
 
-        .sidebar.active {
-            transform: translateX(0);
+
+
+        .sidebar.active { transform: translateX(0); box-shadow: var(--shadow-md); }
+
+
+
+        @media (min-width: 769px) {
+
+            .sidebar { width: 72px; transform: translateX(0); transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+            .sidebar:hover { width: 280px; }
+
+            .overlay { display: none; }
+
         }
 
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
 
-        .sidebar::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
-        }
 
-        .sidebar-overlay {
-            position: fixed;
-            top: 64px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 998;
-        }
+        @media (min-width: 1200px) { .sidebar { width: 280px; } }
 
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
 
-        /* Profile in Sidebar */
-        .sidebar-profile {
-            padding: 0 16px 20px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
 
-        .profile-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg);
-            border-radius: 12px;
-        }
+        .nav { list-style: none; padding: 1rem 0; }
 
-        .profile-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+        .nav-section { padding: 0 1rem; margin-bottom: 0.5rem; }
+
+        
+
+        .nav-section-title {
+
+            font-size: 0.75rem;
+
             font-weight: 600;
-            font-size: 18px;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(31, 151, 169, 0.3);
-        }
 
-        .profile-details {
-            flex: 1;
-            min-width: 0;
-        }
+            color: var(--text-tertiary);
 
-        .profile-name {
-            font-weight: 600;
-            font-size: 15px;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .profile-role {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .sidebar-section {
-            padding: 0 16px;
-            margin-bottom: 24px;
-        }
-
-        .sidebar-title {
-            font-size: 11px;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            padding: 0 12px;
+
+            letter-spacing: 0.05em;
+
+            padding: 0.5rem;
+
+            opacity: 1;
+
+            transition: opacity 0.2s ease;
+
         }
 
-        .sidebar-menu {
-            list-style: none;
+
+
+        @media (min-width: 769px) and (max-width: 1199px) {
+
+            .sidebar:not(:hover) .nav-section-title { opacity: 0; }
+
         }
 
-        .sidebar-item {
-            margin-bottom: 2px;
-        }
 
-        .sidebar-link {
+
+        .nav-item { margin-bottom: 0.25rem; }
+
+
+
+        .nav-link {
+
             display: flex;
+
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 8px;
-            text-decoration: none;
+
+            padding: 0.875rem 1rem;
+
             color: var(--text-secondary);
-            font-size: 15px;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            transition: all 0.2s ease;
+
+            white-space: nowrap;
+
+            position: relative;
+
+        }
+
+
+
+        .nav-link:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+        
+
+        .nav-link.active {
+
+            background: linear-gradient(135deg, rgba(61, 217, 208, 0.15) 0%, rgba(125, 227, 203, 0.15) 100%);
+
+            color: var(--accent-teal);
+
             font-weight: 500;
-            transition: all 0.2s;
-            cursor: pointer;
-            min-height: 48px;
+
         }
 
-        .sidebar-link:hover,
-        .sidebar-link:active {
-            background: rgba(31, 151, 169, 0.08);
-            color: var(--primary);
+
+
+        .nav-link.active::before {
+
+            content: '';
+
+            position: absolute;
+
+            left: 0;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 3px;
+
+            height: 60%;
+
+            background: linear-gradient(180deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
+            border-radius: 0 2px 2px 0;
+
         }
 
-        .sidebar-link.active {
-            background: rgba(31, 151, 169, 0.12);
-            color: var(--primary);
-            font-weight: 600;
-        }
 
-        .sidebar-icon {
-            width: 22px;
-            height: 22px;
+
+        .nav-icon {
+
+            width: 20px;
+
+            height: 20px;
+
+            margin-right: 0.875rem;
+
             flex-shrink: 0;
+
+            stroke: currentColor;
+
+            fill: none;
+
+            stroke-width: 2;
+
+            transition: margin 0.3s ease;
+
         }
 
-        .storage-widget {
-            margin: 0 16px 16px;
-            padding: 16px;
-            background: var(--bg);
-            border-radius: 12px;
+
+
+        .nav-text { opacity: 1; transition: opacity 0.2s ease; }
+
+
+
+        @media (min-width: 769px) and (max-width: 1199px) {
+
+            .sidebar:not(:hover) .nav-text { opacity: 0; width: 0; overflow: hidden; }
+
+            .sidebar:not(:hover) .nav-icon { margin-right: 0; }
+
+            .sidebar:not(:hover) .nav-link { justify-content: center; }
+
         }
 
-        .storage-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
 
-        .storage-header span {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .storage-bar {
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 999px;
-            overflow: hidden;
-        }
-
-        .storage-fill {
-            height: 100%;
-            width: 52%;
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
-            border-radius: 999px;
-        }
 
         /* Main Content */
-        .main-content {
-            margin-top: 64px;
-            padding: 20px 16px 80px;
-            min-height: calc(100vh - 64px);
+
+        .main-wrapper {
+
+            flex: 1;
+
+            margin-top: 60px;
+
+            margin-left: 0;
+
+            transition: margin-left 0.3s ease;
+
         }
 
-        .page-header {
-            margin-bottom: 24px;
-        }
 
-        .page-header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
 
-        .page-header p {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
+        @media (min-width: 769px) { .main-wrapper { margin-left: 72px; } }
 
-        .header-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
+        @media (min-width: 1200px) { .main-wrapper { margin-left: 280px; } }
 
-        /* Views */
-        .view {
-            display: none;
-        }
 
-        .view.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .main { padding: 1.5rem; max-width: 1600px; margin: 0 auto; }
 
-        /* Quick Actions */
-        .quick-actions {
+        @media (min-width: 769px) { .main { padding: 2rem; } }
+
+
+
+        .page-header { margin-bottom: 2rem; }
+
+        .page-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+
+        .page-subtitle { font-size: 1rem; color: var(--text-secondary); }
+
+
+
+        /* Integration Grid */
+
+        .integration-grid {
+
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
+
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+            gap: 1.5rem;
+
+            margin-bottom: 2rem;
+
         }
 
-        .quick-action {
-            background: white;
-            padding: 20px 16px;
-            border-radius: 16px;
+
+
+        .integration-card {
+
+            background: var(--surface);
+
             border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            color: inherit;
-            min-height: 140px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+
+            border-radius: 16px;
+
+            padding: 1.5rem;
+
+            transition: all 0.3s ease;
+
+            position: relative;
+
+            overflow: hidden;
+
         }
 
-        .quick-action:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+
+        .integration-card::before {
+
+            content: '';
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            right: 0;
+
+            height: 3px;
+
+            background: linear-gradient(90deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
+            opacity: 0;
+
+            transition: opacity 0.3s ease;
+
         }
 
-        .quick-action-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
+
+
+        .integration-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        .integration-card:hover::before,
+
+        .integration-card.connected::before { opacity: 1; }
+
+
+
+        .integration-header {
+
             display: flex;
+
             align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 1rem;
+
+        }
+
+
+
+        .integration-info { display: flex; align-items: center; gap: 0.75rem; }
+
+
+
+        .service-icon {
+
+            width: 40px;
+
+            height: 40px;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+
             justify-content: center;
-            margin-bottom: 12px;
+
         }
 
-        .quick-action h3 {
-            font-size: 16px;
+
+
+        .service-icon.github { background: linear-gradient(135deg, #24292e 0%, #1a1e22 100%); }
+
+        .service-icon.openai { background: linear-gradient(135deg, #10a37f 0%, #0d8a6b 100%); }
+
+        .service-icon.cloudflare { background: linear-gradient(135deg, #f38020 0%, #e3701a 100%); }
+
+        .service-icon.cursor { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+
+        
+
+        .service-icon svg { width: 24px; height: 24px; fill: white; }
+
+
+
+        .integration-badge {
+
+            padding: 0.25rem 0.625rem;
+
+            border-radius: 8px;
+
+            font-size: 0.75rem;
+
             font-weight: 600;
-            margin-bottom: 4px;
+
+            text-transform: uppercase;
+
         }
 
-        .quick-action p {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
 
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
 
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-        }
+        .integration-badge.connected {
 
-        .stat-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
+            background: rgba(52, 211, 153, 0.2);
 
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-
-        .stat-change {
-            font-size: 13px;
-            font-weight: 600;
             color: var(--success);
+
+            border: 1px solid var(--success);
+
         }
+
+
+
+        .integration-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
+
+        .integration-description { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem; }
+
+        .integration-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+
 
         /* Buttons */
+
         .btn {
-            padding: 12px 20px;
-            border-radius: 10px;
+
+            padding: 0.625rem 1.25rem;
+
+            border-radius: 8px;
+
+            font-size: 0.875rem;
+
+            font-weight: 500;
+
             border: none;
-            font-weight: 600;
-            font-size: 14px;
+
             cursor: pointer;
-            transition: all 0.2s;
+
+            transition: all 0.2s ease;
+
             display: inline-flex;
+
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: inherit;
-            min-height: 44px;
+
+            gap: 0.5rem;
+
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
+
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            box-shadow: 0 4px 12px rgba(31, 151, 169, 0.3);
+
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
+            color: var(--bg-primary);
+
         }
+
+
+
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(61, 217, 208, 0.4); }
+
+
 
         .btn-secondary {
-            background: rgba(31, 151, 169, 0.1);
-            color: var(--primary);
-            flex: 1;
-        }
 
-        .btn-danger {
-            background: #fee;
-            color: var(--danger);
-        }
+            background: var(--surface-elevated);
 
-        /* Service Cards */
-        .service-card {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
+            color: var(--text-primary);
+
             border: 1px solid var(--border);
-            margin-bottom: 16px;
+
         }
 
-        .service-card h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
 
-        .service-card p {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-        }
 
-        /* Chat */
-        .chat-container {
-            background: white;
+        .btn-secondary:hover { border-color: var(--border-hover); }
+
+
+
+        .btn-icon { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+
+
+        /* Dev Zone */
+
+        .dev-zone {
+
+            background: var(--surface);
+
             border: 1px solid var(--border);
+
             border-radius: 16px;
-            height: calc(100vh - 200px);
+
+            padding: 1.5rem;
+
+            margin-bottom: 2rem;
+
+        }
+
+
+
+        .dev-zone-header {
+
             display: flex;
-            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 1.5rem;
+
+            padding-bottom: 1rem;
+
+            border-bottom: 1px solid var(--border);
+
         }
+
+
+
+        .dev-zone-title { font-size: 1.25rem; font-weight: 600; }
+
+        .quick-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+
+
+        /* Form */
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem; }
+
+        
+
+        .form-input {
+
+            width: 100%;
+
+            background: var(--surface-elevated);
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            padding: 0.75rem;
+
+            color: var(--text-primary);
+
+            font-family: inherit;
+
+            font-size: 0.875rem;
+
+            transition: all 0.2s ease;
+
+        }
+
+
+
+        .form-input:focus { outline: none; border-color: var(--accent-teal); box-shadow: 0 0 0 3px rgba(61, 217, 208, 0.1); }
+
+        .form-input::placeholder { color: var(--text-tertiary); }
+
+
+
+        /* Repo Grid */
+
+        .repo-grid { display: grid; gap: 1rem; }
+
+
+
+        .repo-card {
+
+            background: var(--surface-elevated);
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            padding: 1.25rem;
+
+            transition: all 0.2s ease;
+
+        }
+
+
+
+        .repo-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+
+
+
+        .repo-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+
+        
+
+        .repo-name {
+
+            font-size: 1rem;
+
+            font-weight: 600;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.5rem;
+
+        }
+
+
+
+        .repo-icon { width: 16px; height: 16px; stroke: var(--text-secondary); fill: none; stroke-width: 2; }
+
+
+
+        .repo-status { padding: 0.25rem 0.625rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600; }
+
+        .repo-status.deployed { background: rgba(52, 211, 153, 0.2); color: var(--success); }
+
+        .repo-status.building { background: rgba(96, 165, 250, 0.2); color: var(--info); }
+
+
+
+        .repo-description { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.75rem; line-height: 1.5; }
+
+        .repo-meta { display: flex; gap: 1rem; font-size: 0.75rem; color: var(--text-tertiary); align-items: center; }
+
+
+
+        @media (max-width: 768px) {
+
+            .page-title { font-size: 1.5rem; }
+
+            .integration-grid { grid-template-columns: 1fr; }
+
+        }
+
+
+
+        /* Persistent Chat Panel */
+
+        .chat-panel {
+
+            position: fixed;
+
+            bottom: 0;
+
+            right: 1.5rem;
+
+            width: 420px;
+
+            max-width: calc(100vw - 3rem);
+
+            height: 600px;
+
+            max-height: calc(100vh - 100px);
+
+            background: var(--bg-primary);
+
+            border: 1px solid var(--border);
+
+            border-radius: 16px 16px 0 0;
+
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3), 
+                        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+
+            z-index: 9998;
+
+            display: flex;
+
+            flex-direction: column;
+
+            transform: translateY(calc(100% + 20px));
+
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            backdrop-filter: blur(20px) saturate(180%);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+        }
+
+
+
+        .chat-panel.active {
+
+            transform: translateY(0);
+
+            opacity: 1;
+
+            pointer-events: auto;
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .chat-panel {
+
+                max-width: 100%;
+
+                width: 100%;
+
+                height: calc(100vh - 60px);
+
+                border-radius: 0;
+
+                top: 60px;
+
+                bottom: auto;
+
+                right: 0;
+
+                left: 0;
+
+                z-index: 9999;
+
+            }
+
+
+
+            .agent-toolbox {
+
+                z-index: 10000;
+
+            }
+
+        }
+
+
+
+        .chat-header {
+
+            padding: 1rem 1.5rem;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            flex-shrink: 0;
+
+        }
+
+
+
+        .chat-header-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.75rem;
+
+        }
+
+
+
+        .chat-avatar {
+
+            width: 36px;
+
+            height: 36px;
+
+            border-radius: 8px;
+
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+
+        .chat-avatar svg {
+
+            width: 20px;
+
+            height: 20px;
+
+            stroke: var(--bg-primary);
+
+            fill: none;
+
+            stroke-width: 2;
+
+        }
+
+
+
+        .chat-header-text h3 {
+
+            font-size: 0.938rem;
+
+            font-weight: 600;
+
+            color: var(--text-primary);
+
+            margin-bottom: 0.125rem;
+
+        }
+
+
+
+        .chat-header-text p {
+
+            font-size: 0.75rem;
+
+            color: var(--text-secondary);
+
+        }
+
+
+
+        .chat-close {
+
+            width: 32px;
+
+            height: 32px;
+
+            background: var(--surface-hover);
+
+            border: 1px solid var(--border);
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition: all 0.2s ease;
+
+        }
+
+
+
+        .chat-close:hover {
+
+            border-color: var(--border-hover);
+
+            background: var(--surface-elevated);
+
+        }
+
+
+
+        .chat-close svg {
+
+            width: 16px;
+
+            height: 16px;
+
+            stroke: var(--text-secondary);
+
+            stroke-width: 2;
+
+        }
+
+
 
         .chat-messages {
+
             flex: 1;
+
             overflow-y: auto;
-            padding: 16px;
+
+            padding: 1.5rem;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 1rem;
+
         }
 
-        .message {
+
+
+        .chat-message {
+
             display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
+
+            gap: 0.75rem;
+
+            animation: slideIn 0.3s ease;
+
         }
 
-        .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
+
+
+        @keyframes slideIn {
+
+            from {
+
+                opacity: 0;
+
+                transform: translateY(10px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform: translateY(0);
+
+            }
+
+        }
+
+
+
+        .chat-message.user {
+
+            flex-direction: row-reverse;
+
+        }
+
+
+
+        .chat-message-avatar {
+
+            width: 32px;
+
+            height: 32px;
+
+            border-radius: 8px;
+
             flex-shrink: 0;
-            font-size: 14px;
-        }
 
-        .message-content {
-            flex: 1;
-        }
-
-        .message-header {
             display: flex;
-            align-items: baseline;
-            gap: 8px;
-            margin-bottom: 4px;
-        }
 
-        .message-author {
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 0.75rem;
+
             font-weight: 600;
-            font-size: 14px;
+
         }
 
-        .message-time {
-            font-size: 12px;
-            color: var(--text-secondary);
+
+
+        .chat-message.assistant .chat-message-avatar {
+
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
+            color: var(--bg-primary);
+
         }
 
-        .message-text {
-            font-size: 14px;
-            line-height: 1.5;
+
+
+        .chat-message.user .chat-message-avatar {
+
+            background: var(--surface-elevated);
+
+            color: var(--text-primary);
+
+            border: 1px solid var(--border);
+
         }
 
-        .chat-input-container {
-            padding: 16px;
-            border-top: 1px solid var(--border);
+
+
+        .chat-message-content {
+
+            flex: 1;
+
+            max-width: 75%;
+
         }
+
+
+
+        .chat-message-bubble {
+
+            background: var(--surface-elevated);
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            padding: 0.75rem 1rem;
+
+            font-size: 0.875rem;
+
+            line-height: 1.6;
+
+            color: var(--text-primary);
+
+        }
+
+
+
+        .chat-message.user .chat-message-bubble {
+
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
+            color: var(--bg-primary);
+
+            border: none;
+
+        }
+
+
+
+        .chat-message-time {
+
+            font-size: 0.688rem;
+
+            color: var(--text-tertiary);
+
+            margin-top: 0.375rem;
+
+            padding: 0 0.5rem;
+
+        }
+
+
 
         .chat-input-wrapper {
-            display: flex;
-            gap: 8px;
-            align-items: flex-end;
+
+            padding: 1rem 1.5rem;
+
+            border-top: 1px solid var(--border);
+
+            flex-shrink: 0;
+
         }
+
+
+
+        .chat-input-container {
+
+            display: flex;
+
+            gap: 0.75rem;
+
+            align-items: flex-end;
+
+        }
+
+
 
         .chat-input {
+
             flex: 1;
-            padding: 12px;
+
+            background: var(--surface-elevated);
+
             border: 1px solid var(--border);
-            border-radius: 10px;
+
+            border-radius: 12px;
+
+            padding: 0.75rem 1rem;
+
+            color: var(--text-primary);
+
             font-family: inherit;
-            font-size: 14px;
+
+            font-size: 0.875rem;
+
             resize: none;
-            min-height: 44px;
+
+            max-height: 120px;
+
+            transition: all 0.2s ease;
+
         }
+
+
 
         .chat-input:focus {
+
             outline: none;
-            border-color: var(--primary);
+
+            border-color: var(--accent-teal);
+
+            box-shadow: 0 0 0 3px rgba(61, 217, 208, 0.1);
+
         }
 
-        .send-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background: var(--primary);
+
+
+        .chat-input::placeholder {
+
+            color: var(--text-tertiary);
+
+        }
+
+
+
+        .chat-send {
+
+            width: 40px;
+
+            height: 40px;
+
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+
             border: none;
-            color: white;
+
+            border-radius: 10px;
+
             cursor: pointer;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
-        }
 
-        /* Board Columns */
-        .board-container {
-            overflow-x: auto;
-            margin: -20px -16px 0;
-            padding: 20px 16px;
-        }
+            transition: all 0.2s ease;
 
-        .board-columns {
-            display: flex;
-            gap: 16px;
-            min-width: min-content;
-        }
-
-        .board-column {
-            width: 280px;
-            background: white;
-            border-radius: 12px;
-            border: 1px solid var(--border);
             flex-shrink: 0;
-            max-height: calc(100vh - 220px);
-            display: flex;
-            flex-direction: column;
+
         }
 
-        .column-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+
+
+        .chat-send:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 4px 12px rgba(61, 217, 208, 0.4);
+
         }
 
-        .column-title {
-            font-weight: 600;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+
+        .chat-send:disabled {
+
+            opacity: 0.5;
+
+            cursor: not-allowed;
+
+            transform: none;
+
         }
 
-        .column-count {
-            background: var(--bg);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            color: var(--text-secondary);
+
+
+        .chat-send svg {
+
+            width: 18px;
+
+            height: 18px;
+
+            stroke: var(--bg-primary);
+
+            fill: none;
+
+            stroke-width: 2.5;
+
         }
 
-        .column-cards {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px;
-        }
 
-        .task-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            cursor: grab;
-        }
 
-        .task-card:active {
-            cursor: grabbing;
-        }
+        .chat-attach {
 
-        .task-title {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
+            width: 40px;
 
-        .task-description {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-        }
+            height: 40px;
 
-        .task-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-        }
+            background: rgba(167, 139, 250, 0.1);
 
-        .task-priority {
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 11px;
-        }
+            border: 1px solid rgba(167, 139, 250, 0.3);
 
-        .priority-high { background: #fee2e2; color: #991b1b; }
-        .priority-medium { background: #fef3c7; color: #92400e; }
-        .priority-low { background: #dbeafe; color: #1e40af; }
+            border-radius: 10px;
 
-        /* Photo Gallery */
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .photo-item {
-            aspect-ratio: 1;
-            border-radius: 12px;
-            overflow: hidden;
-            background: var(--bg);
-            border: 1px solid var(--border);
             cursor: pointer;
-            position: relative;
-        }
 
-        .photo-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .photo-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-            padding: 12px;
-            color: white;
-            font-size: 12px;
-        }
-
-        /* Upload Area */
-        .upload-area {
-            background: white;
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            padding: 32px 20px;
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .upload-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 16px;
-            background: rgba(31, 151, 169, 0.1);
-            border-radius: 12px;
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
+            transition: all 0.2s ease;
+
+            flex-shrink: 0;
+
         }
 
-        /* Tablet & Desktop */
-        @media (min-width: 640px) {
-            .quick-actions {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 16px;
-            }
 
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
 
-            .photo-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        .chat-attach:hover {
+
+            background: rgba(167, 139, 250, 0.2);
+
+            border-color: rgba(167, 139, 250, 0.5);
+
+            transform: translateY(-2px);
+
         }
 
-        @media (min-width: 1024px) {
-            .hamburger {
-                display: none;
-            }
 
-            .sidebar {
-                transform: translateX(0);
-                position: fixed;
-                width: 280px;
-            }
 
-            .sidebar-overlay {
-                display: none;
-            }
+        .chat-attach svg {
 
-            .main-content {
-                margin-left: 280px;
-                padding: 32px;
-            }
+            width: 18px;
 
-            .logo {
-                justify-content: flex-start;
-            }
+            height: 18px;
 
-            .quick-actions {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
-            }
+            stroke: var(--accent-purple);
 
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-            }
+            fill: none;
 
-            .photo-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 16px;
-            }
+            stroke-width: 2;
 
-            .page-header h1 {
-                font-size: 32px;
-            }
-
-            .page-header p {
-                font-size: 16px;
-            }
         }
 
-        /* iOS Safe Area */
-        @supports (padding: max(0px)) {
-            .header {
-                padding-left: max(16px, env(safe-area-inset-left));
-                padding-right: max(16px, env(safe-area-inset-right));
-            }
 
-            .main-content {
-                padding-left: max(16px, env(safe-area-inset-left));
-                padding-right: max(16px, env(safe-area-inset-right));
-                padding-bottom: max(80px, env(safe-area-inset-bottom));
-            }
+
+        .chat-typing {
+
+            display: flex;
+
+            gap: 0.75rem;
+
+            padding: 0 1.5rem;
+
+            opacity: 0;
+
+            animation: fadeIn 0.3s ease forwards;
+
+        }
+
+
+
+        @keyframes fadeIn {
+
+            to { opacity: 1; }
+
+        }
+
+
+
+        .typing-indicator {
+
+            display: flex;
+
+            gap: 4px;
+
+            align-items: center;
+
+            padding: 0.75rem 1rem;
+
+            background: var(--surface-elevated);
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+        }
+
+
+
+        .typing-dot {
+
+            width: 6px;
+
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: var(--text-tertiary);
+
+            animation: typing 1.4s infinite;
+
+        }
+
+
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+
+
+        @keyframes typing {
+
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+
+            30% { transform: translateY(-8px); opacity: 1; }
+
+        }
+
+
+
+        .chat-context-pill {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 0.375rem;
+
+            padding: 0.375rem 0.75rem;
+
+            background: var(--surface-hover);
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            font-size: 0.75rem;
+
+            color: var(--text-secondary);
+
+            margin-top: 0.5rem;
+
+        }
+
+
+
+        .chat-context-pill svg {
+
+            width: 12px;
+
+            height: 12px;
+
+            stroke: currentColor;
+
+            fill: none;
+
+            stroke-width: 2;
+
+        }
+
+    
+        /* Content styling */
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            padding-top: 80px;
+        }
+        
+        .markdown-body {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .markdown-body h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .markdown-body h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .markdown-body h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+        
+        .markdown-body p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        
+        .markdown-body ul, .markdown-body ol {
+            color: var(--text-secondary);
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .markdown-body li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-body code {
+            background: var(--surface-elevated);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent-teal);
+            border: 1px solid var(--border);
+        }
+        
+        .markdown-body pre {
+            background: var(--surface-elevated);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            margin: 1rem 0;
+        }
+        
+        .markdown-body pre code {
+            background: none;
+            padding: 0;
+            border: none;
+            color: var(--text-primary);
+        }
+        
+        .markdown-body a {
+            color: var(--accent-teal);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .markdown-body a:hover {
+            color: var(--accent-mint);
+            text-decoration: underline;
+        }
+        
+        .markdown-body strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .hero-section {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-mint) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .feature-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(61, 217, 208, 0.2) 0%, rgba(125, 227, 203, 0.2) 100%);
+            border: 1px solid var(--border-hover);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: var(--accent-teal);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0.25rem;
         }
     </style>
 </head>
 <body>
-
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-
-            <div class="logo">
-                <div class="logo-icon">M</div>
-                <div class="logo-text">
-                    <h1>Meaux Access</h1>
-                </div>
-            </div>
-
-            <button class="header-notification">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <span class="notification-dot"></span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <!-- Profile Section -->
-        <div class="sidebar-profile">
-            <div class="profile-info" data-view="settings" style="cursor: pointer; transition: all 0.2s;">
-                <div class="profile-avatar">SP</div>
-                <div class="profile-details">
-                    <div class="profile-name">Sam Primeaux</div>
-                    <div class="profile-role">CEO & Founder</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="sidebar-section">
-            <div class="sidebar-title">Workspace</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-item">
-                    <a class="sidebar-link active" data-view="overview">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                        <span>Overview</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="meoxtalk">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 10H8.01M12 10H12.01M16 10H16.01M9 16H5C4.46957 16 3.96086 15.7893 3.58579 15.4142C3.21071 15.0391 3 14.5304 3 14V6C3 5.46957 3.21071 4.96086 3.58579 4.58579C3.96086 4.21071 4.46957 4 5 4H19C19.5304 4 20.0391 4.21071 20.4142 4.58579C20.7893 4.96086 21 5.46957 21 6V14C21 14.5304 20.7893 15.0391 20.4142 15.4142C20.0391 15.7893 19.5304 16 19 16H14L9 21V16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>MeauxTalk</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="meauxboard">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                            <rect x="3" y="13" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-                            <rect x="13" y="3" width="7" height="16" rx="1" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                        <span>MeauxBoard</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="meauxdocs">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 12H15M9 16H15M17 21H7C6.46957 21 5.96086 20.7893 5.58579 20.4142C5.21071 20.0391 5 19.5304 5 19V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 5.46957 3 6 3H14L19 8V19C19 19.5304 18.7893 20.0391 18.4142 20.4142C18.0391 20.7893 17.5304 21 17 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>MeauxDocs</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="meauxphoto">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <circle cx="9" cy="10" r="2" stroke="currentColor" stroke-width="2"/>
-                            <path d="M3 15L7 11L11 15L15 11L21 17V17C21 18.1046 20.1046 19 19 19H5C3.89543 19 3 18.1046 3 17V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>MeauxPhoto</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-title">Communications</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="mail">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>Mail</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="calendar">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="6" width="18" height="15" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <path d="M3 10H21M8 3V6M16 3V6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <span>Calendar</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="meet">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 10L19.5528 7.72361C20.2177 7.39116 21 7.87465 21 8.61803V15.382C21 16.1253 20.2177 16.6088 19.5528 16.2764L15 14M5 18H13C14.1046 18 15 17.1046 15 16V8C15 6.89543 14.1046 6 13 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>Meet</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-title">Storage & Services</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="meauxcloud">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 15C3 17.8284 4.64162 20.2663 7 21.2361M21 15C21 17.8284 19.3584 20.2663 17 21.2361M7 21.2361C7.87568 21.7044 8.90632 22 10 22H14C15.0937 22 16.1243 21.7044 17 21.2361M7 21.2361C4.79086 20.3884 3 18.3859 3 16V13.5C3 11.0147 4.79086 9.01224 7 8.16442M17 21.2361C19.2091 20.3884 21 18.3859 21 16V13.5C21 11.0147 19.2091 9.01224 17 8.16442M7 8.16442C7.87568 7.69555 8.90632 7.4 10 7.4H14C15.0937 7.4 16.1243 7.69555 17 8.16442M12 2V7.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>MeauxCloud</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="vault">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>Secure Vault</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="wallet">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <path d="M2 10H22M7 15H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <span>Wallet</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-title">Integrations</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="stripe">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <path d="M2 10H22M7 15H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <span>Stripe</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="supabase">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 7V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V7M4 7H20M4 7L6 5H18L20 7M9 11V15M12 9V15M15 13V15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        <span>Supabase</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="vercel">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 3L3 21H21L12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>Vercel</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="sidebar-section">
-            <div class="sidebar-title">Account</div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-item">
-                    <a class="sidebar-link" data-view="settings">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>Settings</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="storage-widget">
-            <div class="storage-header">
-                <span style="color: var(--text);">Storage</span>
-                <span style="color: var(--text-secondary);">2.1 / 4 TB</span>
-            </div>
-            <div class="storage-bar">
-                <div class="storage-fill"></div>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        
-        <!-- Overview View -->
-        <div id="overview" class="view active">
-            <div class="page-header">
-                <h1>Dashboard Overview</h1>
-                <p>Welcome back, Sam!</p>
-            </div>
-
-            <div class="quick-actions">
-                <div class="quick-action" data-view="meoxtalk">
-                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 10H8.01M12 10H12.01M16 10H16.01M9 16H5C4.46957 16 3.96086 15.7893 3.58579 15.4142C3.21071 15.0391 3 14.5304 3 14V6C3 5.46957 3.21071 4.96086 3.58579 4.58579C3.96086 4.21071 4.46957 4 5 4H19C19.5304 4 20.0391 4.21071 20.4142 4.58579C20.7893 4.96086 21 5.46957 21 6V14C21 14.5304 20.7893 15.0391 20.4142 15.4142C20.0391 15.7893 19.5304 16 19 16H14L9 21V16Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <h3>Team Chat</h3>
-                    <p>MeauxTalk</p>
-                </div>
-
-                <div class="quick-action" data-view="meauxboard">
-                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #1F97A9, #26B4C9);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/>
-                            <rect x="3" y="13" width="7" height="7" rx="1" stroke="white" stroke-width="2"/>
-                            <rect x="13" y="3" width="7" height="16" rx="1" stroke="white" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <h3>Projects</h3>
-                    <p>MeauxBoard</p>
-                </div>
-
-                <div class="quick-action" data-view="meauxphoto">
-                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="white" stroke-width="2"/>
-                            <circle cx="9" cy="10" r="2" stroke="white" stroke-width="2"/>
-                            <path d="M3 15L7 11L11 15L15 11L21 17V17C21 18.1046 20.1046 19 19 19H5C3.89543 19 3 18.1046 3 17V15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <h3>Images</h3>
-                    <p>MeauxPhoto</p>
-                </div>
-
-                <div class="quick-action" data-view="meet">
-                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 10L19.5528 7.72361C20.2177 7.39116 21 7.87465 21 8.61803V15.382C21 16.1253 20.2177 16.6088 19.5528 16.2764L15 14M5 18H13C14.1046 18 15 17.1046 15 16V8C15 6.89543 14.1046 6 13 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <h3>Video</h3>
-                    <p>Meet</p>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Assets</div>
-                    <div class="stat-value">24</div>
-                    <div class="stat-change">+12% this month</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Active Projects</div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-change">+3 this week</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Team Members</div>
-                    <div class="stat-value">8</div>
-                    <div class="stat-change">All active</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MeauxTalk View -->
-        <div id="meoxtalk" class="view">
-            <div class="page-header">
-                <h1>MeauxTalk</h1>
-                <p>Team messaging</p>
-            </div>
-
-            <div class="chat-container">
-                <div class="chat-messages">
-                    <div class="message">
-                        <div class="message-avatar">S</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-author">Sam</span>
-                                <span class="message-time">9:41 AM</span>
-                            </div>
-                            <div class="message-text">Ready to launch Meaux Access today!</div>
-                        </div>
-                    </div>
-
-                    <div class="message">
-                        <div class="message-avatar" style="background: #64748b;">C</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-author">Connor</span>
-                                <span class="message-time">9:43 AM</span>
-                            </div>
-                            <div class="message-text">All integrations are live and tested!</div>
-                        </div>
-                    </div>
-
-                    <div class="message">
-                        <div class="message-avatar" style="background: var(--accent);">F</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-author">Fred</span>
-                                <span class="message-time">9:45 AM</span>
-                            </div>
-                            <div class="message-text">The design looks amazing!</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chat-input-container">
-                    <div class="chat-input-wrapper">
-                        <textarea class="chat-input" placeholder="Message the team..." rows="1"></textarea>
-                        <button class="send-btn">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MeauxBoard View -->
-        <div id="meauxboard" class="view">
-            <div class="page-header">
-                <h1>MeauxBoard</h1>
-                <p>Project management</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus"></i> New Task
+    <div class="layout">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <button class="hamburger" id="hamburger">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
                     </button>
+                    <div class="logo">AutoMeaux</div>
+                </div>
+                <div class="header-right">
+                    <a href="https://autonomous-coding-agent.meauxbility.workers.dev" class="btn btn-secondary" style="text-decoration: none; color: inherit;">
+                        Live App
+                    </a>
                 </div>
             </div>
+        </header>
 
-            <div class="board-container">
-                <div class="board-columns">
-                    <div class="board-column">
-                        <div class="column-header">
-                            <div class="column-title">
-                                📋 To Do
-                                <span class="column-count">3</span>
-                            </div>
-                        </div>
-                        <div class="column-cards">
-                            <div class="task-card">
-                                <div class="task-title">Setup Cloudflare R2</div>
-                                <div class="task-description">Configure storage buckets</div>
-                                <div class="task-meta">
-                                    <span>Sam</span>
-                                    <span class="task-priority priority-high">High</span>
-                                </div>
-                            </div>
-                            <div class="task-card">
-                                <div class="task-title">Email Templates</div>
-                                <div class="task-description">Design team communications</div>
-                                <div class="task-meta">
-                                    <span>Fred</span>
-                                    <span class="task-priority priority-medium">Medium</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="board-column">
-                        <div class="column-header">
-                            <div class="column-title">
-                                ⚙️ In Progress
-                                <span class="column-count">2</span>
-                            </div>
-                        </div>
-                        <div class="column-cards">
-                            <div class="task-card">
-                                <div class="task-title">MeauxTalk Integration</div>
-                                <div class="task-description">Connect messaging with Supabase</div>
-                                <div class="task-meta">
-                                    <span>Connor</span>
-                                    <span class="task-priority priority-high">High</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="board-column">
-                        <div class="column-header">
-                            <div class="column-title">
-                                ✅ Done
-                                <span class="column-count">4</span>
-                            </div>
-                        </div>
-                        <div class="column-cards">
-                            <div class="task-card" style="opacity: 0.7;">
-                                <div class="task-title">Meaux Access Logo</div>
-                                <div class="task-description">Cloud logo with M lettermark</div>
-                                <div class="task-meta">
-                                    <span>Fred</span>
-                                    <span class="task-priority priority-high">High</span>
-                                </div>
-                            </div>
-                        </div>
+        <!-- Main Content -->
+        <main class="main-wrapper" style="flex: 1; padding-top: 60px;">
+            <div class="content-container">
+                <div class="hero-section">
+                    <h1 class="hero-title">Autonomous Coding Agent</h1>
+                    <p class="hero-subtitle">AI-powered autonomous application builder using Claude API, deployed on Cloudflare Workers</p>
+                    <div style="margin-top: 1.5rem;">
+                        <span class="feature-badge">🤖 AI-Powered</span>
+                        <span class="feature-badge">⚡ Cloudflare Workers</span>
+                        <span class="feature-badge">🚀 Production Ready</span>
                     </div>
                 </div>
-            </div>
-        </div>
+                
+                <div class="markdown-body">
+                    
+    
+      
+      <h1><a href="https://samprimeaux.github.io/autonomous-coding-agent/">autonomous-coding-agent</a></h1>
+      
 
-        <!-- MeauxDocs View -->
-        <div id="meauxdocs" class="view">
-            <div class="page-header">
-                <h1>MeauxDocs</h1>
-                <p>Team documentation</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus"></i> New Doc
-                    </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-folder"></i> Browse
-                    </button>
+      <h1 id="autonomous-coding-agent">Autonomous Coding Agent</h1>
+
+<p>AI-powered autonomous application builder using Claude API, deployed on Cloudflare Workers.</p>
+
+<h2 id="-live-url">🚀 Live URL</h2>
+
+<p><strong>Production</strong>: https://autonomous-coding-agent.meauxbility.workers.dev</p>
+
+<h2 id="-features">✨ Features</h2>
+
+<h3 id="autonomous-coding">Autonomous Coding</h3>
+<ul>
+  <li><strong>Project Management</strong>: Create and manage multiple coding projects</li>
+  <li><strong>Feature Tracking</strong>: Track progress through feature lists</li>
+  <li><strong>Session Management</strong>: Resume work across multiple sessions</li>
+  <li><strong>Progress Persistence</strong>: All progress saved in D1 database and R2 storage</li>
+</ul>
+
+<h3 id="api-endpoints">API Endpoints</h3>
+
+<h4 id="initialize-database">Initialize Database</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /api/init
+</code></pre></div></div>
+
+<h4 id="create-new-session">Create New Session</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /api/sessions
+Body: <span class="o">{</span>
+  <span class="s2">"project_name"</span>: <span class="s2">"my-app"</span>,
+  <span class="s2">"app_spec"</span>: <span class="s2">"Build a todo app..."</span>,
+  <span class="s2">"feature_list"</span>: <span class="o">[</span><span class="s2">"Feature 1"</span>, <span class="s2">"Feature 2"</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="get-all-sessions">Get All Sessions</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /api/sessions
+</code></pre></div></div>
+
+<h4 id="get-single-session">Get Single Session</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /api/sessions/<span class="o">{</span><span class="nb">id</span><span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="run-agent-session">Run Agent Session</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /api/sessions/<span class="o">{</span><span class="nb">id</span><span class="o">}</span>/run
+</code></pre></div></div>
+
+<h3 id="web-dashboard">Web Dashboard</h3>
+<ul>
+  <li>Full-featured web UI at the root URL</li>
+  <li>Create new coding projects</li>
+  <li>View session status and progress</li>
+  <li>Start/continue agent sessions</li>
+  <li>Real-time progress tracking</li>
+</ul>
+
+<h2 id="️-built-functionality">🏗️ Built Functionality</h2>
+
+<ol>
+  <li><strong>D1 Database Integration</strong>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">agent_sessions</code> table with indexes</li>
+      <li>Automatic schema initialization</li>
+      <li>Session status tracking</li>
+    </ul>
+  </li>
+  <li><strong>R2 Storage Integration</strong>
+    <ul>
+      <li>Feature lists stored in R2</li>
+      <li>Project artifacts storage</li>
+      <li>Scalable file storage</li>
+    </ul>
+  </li>
+  <li><strong>RESTful API</strong>
+    <ul>
+      <li>Full CRUD operations for sessions</li>
+      <li>CORS support</li>
+      <li>JSON responses</li>
+      <li>Error handling</li>
+    </ul>
+  </li>
+  <li><strong>Web Dashboard</strong>
+    <ul>
+      <li>Modern dark theme UI</li>
+      <li>Responsive design</li>
+      <li>Real-time session management</li>
+      <li>Progress visualization</li>
+    </ul>
+  </li>
+  <li><strong>Cloudflare Workers</strong>
+    <ul>
+      <li>Edge deployment</li>
+      <li>Low latency</li>
+      <li>Global distribution</li>
+      <li>Serverless architecture</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="-setup">🔧 Setup</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install
+</span>wrangler deploy
+</code></pre></div></div>
+
+<h2 id="-dependencies">📦 Dependencies</h2>
+
+<ul>
+  <li>Cloudflare Workers runtime</li>
+  <li>D1 Database (meaux-work-db)</li>
+  <li>R2 Storage (meaux-work-storage)</li>
+  <li>AI binding (Cloudflare Workers AI)</li>
+  <li>@anthropic-ai/sdk (for Claude API integration)</li>
+</ul>
+
+<h2 id="-cicd">🔄 CI/CD</h2>
+
+<p>Automated deployment via GitHub Actions on push to <code class="language-plaintext highlighter-rouge">main</code> branch.</p>
+
+<p>Required GitHub Secrets:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">CLOUDFLARE_API_TOKEN</code></li>
+  <li><code class="language-plaintext highlighter-rouge">CLOUDFLARE_ACCOUNT_ID</code></li>
+</ul>
+
+<h2 id="-resources">🔗 Resources</h2>
+
+<ul>
+  <li><a href="https://docs.claude.com">Claude API Documentation</a></li>
+  <li><a href="https://developers.cloudflare.com/workers/">Cloudflare Workers Documentation</a></li>
+  <li><a href="https://github.com/anthropics/anthropic-sdk-typescript">Anthropic SDK</a></li>
+</ul>
+
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  
                 </div>
             </div>
+        </main>
+    </div>
 
-            <div class="service-card">
-                <h3>Brand Guidelines</h3>
-                <p>Updated 2 hours ago</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-edit"></i> Open Document
-                </button>
-            </div>
+    <!-- Agent Toolbox (from AutoMeaux) -->
+    <div class="agent-toolbox" id="agentToolbox">
+        <svg class="toolbox-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div class="agent-badge">AI</div>
+    </div>
 
-            <div class="service-card">
-                <h3>Team Handbook</h3>
-                <p>Updated yesterday</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-edit"></i> Open Document
-                </button>
-            </div>
-
-            <div class="service-card">
-                <h3>API Documentation</h3>
-                <p>Updated 3 days ago</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-edit"></i> Open Document
-                </button>
-            </div>
-        </div>
-
-        <!-- MeauxPhoto View -->
-        <div id="meauxphoto" class="view">
-            <div class="page-header">
-                <h1>MeauxPhoto</h1>
-                <p>Image optimization & management</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        Upload Images
-                    </button>
-                    <button class="btn btn-secondary">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                        </svg>
-                        Batch Optimize
-                    </button>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Images</div>
-                    <div class="stat-value">1,247</div>
-                    <div class="stat-change">+24 this week</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Storage Saved</div>
-                    <div class="stat-value">4.2 GB</div>
-                    <div class="stat-change">68% compression</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Optimized</div>
-                    <div class="stat-value">892</div>
-                    <div class="stat-change">71% of total</div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Recent Uploads</h2>
-            <div class="photo-grid">
-                <div class="photo-item" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                    <div class="photo-overlay">
-                        <div style="font-weight: 600;">hero-banner.jpg</div>
-                        <div style="opacity: 0.8;">1.2 MB → 245 KB</div>
-                    </div>
-                </div>
-                <div class="photo-item" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
-                    <div class="photo-overlay">
-                        <div style="font-weight: 600;">product-shot.png</div>
-                        <div style="opacity: 0.8;">890 KB → 178 KB</div>
-                    </div>
-                </div>
-                <div class="photo-item" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
-                    <div class="photo-overlay">
-                        <div style="font-weight: 600;">team-photo.jpg</div>
-                        <div style="opacity: 0.8;">2.1 MB → 412 KB</div>
-                    </div>
-                </div>
-                <div class="photo-item" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
-                    <div class="photo-overlay">
-                        <div style="font-weight: 600;">logo-variations.svg</div>
-                        <div style="opacity: 0.8;">Vector • Optimized</div>
-                    </div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Optimization Tools</h2>
-            <div class="service-card">
-                <h3><i class="fas fa-compress-alt"></i> Smart Compression</h3>
-                <p>Automatically compress images without quality loss using advanced algorithms</p>
-                <button class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-cog"></i> Configure Settings
-                </button>
-            </div>
-
-            <div class="service-card">
-                <h3><i class="fas fa-crop"></i> Batch Resize</h3>
-                <p>Resize multiple images to specific dimensions for web, social, or print</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-play"></i> Start Batch Process
-                </button>
-            </div>
-
-            <div class="service-card">
-                <h3><i class="fas fa-palette"></i> Format Conversion</h3>
-                <p>Convert images between formats: JPG, PNG, WebP, AVIF, SVG</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-exchange-alt"></i> Convert Images
-                </button>
-            </div>
-
-            <div class="service-card">
-                <h3><i class="fas fa-tachometer-alt"></i> CDN Integration</h3>
-                <p>Automatically serve optimized images via Cloudflare CDN for faster loading</p>
-                <div style="display: flex; gap: 8px; margin-top: 12px;">
-                    <button class="btn btn-primary" style="flex: 1;">
-                        <i class="fas fa-check"></i> Enabled
-                    </button>
-                    <button class="btn btn-secondary" style="flex: 1;">
-                        <i class="fas fa-cog"></i> Settings
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mail View -->
-        <div id="mail" class="view">
-            <div class="page-header">
-                <h1>Team Mail</h1>
-                <p>@meauxbility.org & @inneranimals.com</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i> Add Member
-                    </button>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">S</div>
-                    <div>
-                        <h3 style="margin: 0; font-size: 16px;">Sam Primeaux</h3>
-                        <p style="margin: 0; font-family: monospace; font-size: 13px;">sam@meauxbility.org</p>
-                    </div>
-                </div>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-envelope"></i> View Mail
-                </button>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #64748b; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">C</div>
-                    <div>
-                        <h3 style="margin: 0; font-size: 16px;">Connor McNeely</h3>
-                        <p style="margin: 0; font-family: monospace; font-size: 13px;">connor@meauxbility.org</p>
-                    </div>
-                </div>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-envelope"></i> View Mail
-                </button>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">F</div>
-                    <div>
-                        <h3 style="margin: 0; font-size: 16px;">Fred Williams</h3>
-                        <p style="margin: 0; font-family: monospace; font-size: 13px;">fred@inneranimals.com</p>
-                    </div>
-                </div>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-envelope"></i> View Mail
-                </button>
-            </div>
-        </div>
-
-        <!-- Calendar View -->
-        <div id="calendar" class="view">
-            <div class="page-header">
-                <h1>Calendar</h1>
-                <p>Team schedule</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus"></i> New Event
-                    </button>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <h3><i class="fas fa-video"></i> Team Standup</h3>
-                <p><i class="fas fa-clock"></i> Today, 10:00 AM</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-video"></i> Join Meeting
-                </button>
-            </div>
-
-            <div class="service-card">
-                <h3><i class="fas fa-presentation"></i> Client Demo</h3>
-                <p><i class="fas fa-clock"></i> Nov 17, 2:00 PM</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-eye"></i> View Details
-                </button>
-            </div>
-
-            <div class="service-card">
-                <h3><i class="fas fa-tasks"></i> Sprint Planning</h3>
-                <p><i class="fas fa-clock"></i> Nov 20, 9:00 AM</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-eye"></i> View Details
-                </button>
-            </div>
-        </div>
-
-        <!-- Meet View -->
-        <div id="meet" class="view">
-            <div class="page-header">
-                <h1>Meet</h1>
-                <p>Video conferencing</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Create Room
-                    </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-sign-in-alt"></i> Join Room
-                    </button>
-                </div>
-            </div>
-
-            <div style="background: #000; border-radius: 16px; height: 300px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 24px;">
-                <div style="text-align: center;">
-                    <i class="fas fa-video" style="font-size: 48px; margin-bottom: 16px;"></i>
-                    <p>Camera preview</p>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Meetings Today</div>
-                    <div class="stat-value">3</div>
-                    <div class="stat-change">2 upcoming</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Total This Week</div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-change">+3 from last week</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Avg Duration</div>
-                    <div class="stat-value">45m</div>
-                    <div class="stat-change">Efficient!</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MeauxCloud View -->
-        <div id="meauxcloud" class="view">
-            <div class="page-header">
-                <h1>MeauxCloud</h1>
-                <p>Unified cloud storage</p>
-            </div>
-
-            <div class="upload-area">
-                <div class="upload-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h3 style="font-size: 17px; margin-bottom: 6px;">Upload Files</h3>
-                <p style="margin-bottom: 16px;">Tap to select or drag & drop</p>
-                <button class="btn btn-secondary" style="max-width: 200px;">
-                    <i class="fas fa-folder"></i> Browse Files
-                </button>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="35,20 65,20 85,60 50,60" fill="#4285f4"/>
-                            <polygon points="15,60 50,60 35,87" fill="#34a853"/>
-                            <polygon points="50,60 85,60 70,87 35,87" fill="#fbbc04"/>
-                        </svg>
-                        <div>
-                            <div class="stat-label" style="margin: 0;">Google Drive</div>
-                            <div style="font-size: 18px; font-weight: 600;">2.1 / 4 TB</div>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" style="width: 100%;">
-                        <i class="fab fa-google-drive"></i> Open Drive
-                    </button>
-                </div>
-
-                <div class="stat-card">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M 70 45 C 70 38 65 32 58 32 C 57 32 56 32 55 32 C 53 25 47 20 40 20 C 31 20 24 27 24 36 C 24 37 24 38 24 39 C 18 40 14 45 14 51 C 14 58 19 64 26 64 L 68 64 C 77 64 84 57 84 48 C 84 40 78 34 70 33 Z" fill="#000000"/>
-                        </svg>
-                        <div>
-                            <div class="stat-label" style="margin: 0;">iCloud</div>
-                            <div style="font-size: 18px; font-weight: 600;">1.8 / 4 TB</div>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" style="width: 100%;">
-                        <i class="fas fa-cloud"></i> Open iCloud
-                    </button>
-                </div>
-
-                <div class="stat-card">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="40" fill="#f38020"/>
-                            <path d="M 30 50 Q 35 35, 50 35 Q 65 35, 70 50 Q 65 65, 50 65 Q 35 65, 30 50" fill="white"/>
-                        </svg>
-                        <div>
-                            <div class="stat-label" style="margin: 0;">Cloudflare R2</div>
-                            <div style="font-size: 18px; font-weight: 600;">Unlimited</div>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-plug"></i> Connect
-                    </button>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Recent Files</h2>
-            <div class="service-card">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 48px; height: 48px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-file-pdf" style="font-size: 24px; color: var(--danger);"></i>
-                    </div>
-                    <div style="flex: 1;">
-                        <h3 style="margin: 0; font-size: 16px;">Brand-Guidelines-2025.pdf</h3>
-                        <p style="margin: 0;">Google Drive • Updated 2 hours ago</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 48px; height: 48px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-file-image" style="font-size: 24px; color: var(--primary);"></i>
-                    </div>
-                    <div style="flex: 1;">
-                        <h3 style="margin: 0; font-size: 16px;">meaux-logo-final.svg</h3>
-                        <p style="margin: 0;">iCloud • Updated yesterday</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 48px; height: 48px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-file-word" style="font-size: 24px; color: #2b579a;"></i>
-                    </div>
-                    <div style="flex: 1;">
-                        <h3 style="margin: 0; font-size: 16px;">Project-Proposal-Q4.docx</h3>
-                        <p style="margin: 0;">Google Drive • Updated 3 days ago</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Wallet View -->
-        <div id="wallet" class="view">
-            <div class="page-header">
-                <h1>Wallet</h1>
-                <p>Financial tracking & transactions</p>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Balance</div>
-                    <div class="stat-value">$8,240</div>
-                    <div class="stat-change">Available</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">This Month</div>
-                    <div class="stat-value">$12,450</div>
-                    <div class="stat-change">+18% revenue</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Pending</div>
-                    <div class="stat-value">$2,100</div>
-                    <div class="stat-change">3 transactions</div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Recent Transactions</h2>
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                    <div>
-                        <h3 style="margin: 0; font-size: 16px;">Grant Payment</h3>
-                        <p style="margin: 0; font-size: 13px;">Meauxbility Grant #2024-11</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 18px; font-weight: 600; color: var(--success);">+$500</div>
-                        <p style="margin: 0; font-size: 12px;">2 hours ago</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                    <div>
-                        <h3 style="margin: 0; font-size: 16px;">Donation</h3>
-                        <p style="margin: 0; font-size: 13px;">Individual Donor</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 18px; font-weight: 600; color: var(--success);">+$100</div>
-                        <p style="margin: 0; font-size: 12px;">5 hours ago</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                    <div>
-                        <h3 style="margin: 0; font-size: 16px;">Stripe Fee</h3>
-                        <p style="margin: 0; font-size: 13px;">Processing charges</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 18px; font-weight: 600; color: var(--danger);">-$18.50</div>
-                        <p style="margin: 0; font-size: 12px;">Yesterday</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                    <div>
-                        <h3 style="margin: 0; font-size: 16px;">Monthly Subscription</h3>
-                        <p style="margin: 0; font-size: 13px;">Inner Animals Member</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 18px; font-weight: 600; color: var(--success);">+$29</div>
-                        <p style="margin: 0; font-size: 12px;">2 days ago</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings View -->
-        <div id="settings" class="view">
-            <div class="page-header">
-                <h1>Settings</h1>
-                <p>Account & preferences</p>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Profile</h2>
-            <div class="service-card">
-                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 32px; box-shadow: 0 4px 12px rgba(31, 151, 169, 0.3);">
-                        SP
-                    </div>
-                    <div style="flex: 1;">
-                        <h3 style="margin: 0 0 4px 0; font-size: 20px;">Sam Primeaux</h3>
-                        <p style="margin: 0 0 8px 0;">CEO & Founder</p>
-                        <button class="btn btn-secondary" style="padding: 8px 16px; min-height: 36px;">
-                            <i class="fas fa-camera"></i> Change Photo
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Account Information</h2>
-            <div class="service-card">
-                <div style="margin-bottom: 16px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Full Name</label>
-                    <input type="text" value="Sam Primeaux" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px;">
-                </div>
-                <div style="margin-bottom: 16px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Email</label>
-                    <input type="email" value="sam@meauxbility.org" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px;">
-                </div>
-                <div style="margin-bottom: 16px;">
-                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Role</label>
-                    <input type="text" value="CEO & Founder" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px;">
-                </div>
-                <button class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Preferences</h2>
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
-                    <div>
-                        <h3 style="margin: 0; font-size: 15px;">Email Notifications</h3>
-                        <p style="margin: 0; font-size: 13px;">Receive updates via email</p>
-                    </div>
-                    <label style="position: relative; display: inline-block; width: 48px; height: 28px;">
-                        <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
-                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--primary); border-radius: 28px; transition: 0.3s;"></span>
-                        <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: 0.3s; transform: translateX(20px);"></span>
-                    </label>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
-                    <div>
-                        <h3 style="margin: 0; font-size: 15px;">Push Notifications</h3>
-                        <p style="margin: 0; font-size: 13px;">Browser notifications</p>
-                    </div>
-                    <label style="position: relative; display: inline-block; width: 48px; height: 28px;">
-                        <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
-                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--primary); border-radius: 28px; transition: 0.3s;"></span>
-                        <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: 0.3s; transform: translateX(20px);"></span>
-                    </label>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
-                    <div>
-                        <h3 style="margin: 0; font-size: 15px;">Dark Mode</h3>
-                        <p style="margin: 0; font-size: 13px;">Use dark theme</p>
-                    </div>
-                    <label style="position: relative; display: inline-block; width: 48px; height: 28px;">
-                        <input type="checkbox" style="opacity: 0; width: 0; height: 0;">
-                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #cbd5e1; border-radius: 28px; transition: 0.3s;"></span>
-                        <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: 0.3s;"></span>
-                    </label>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Security</h2>
-            <div class="service-card">
-                <h3><i class="fas fa-key"></i> Change Password</h3>
-                <p>Update your password to keep your account secure</p>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-lock"></i> Change Password
-                </button>
-            </div>
-
-            <div class="service-card">
-                <h3><i class="fas fa-shield-alt"></i> Two-Factor Authentication</h3>
-                <p>Add an extra layer of security to your account</p>
-                <button class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-mobile-alt"></i> Enable 2FA
-                </button>
-            </div>
-
-            <div class="service-card">
-                <h3><i class="fas fa-clock"></i> Active Sessions</h3>
-                <p>Manage devices where you're signed in</p>
-                <div style="padding: 12px 0; border-top: 1px solid var(--border); margin-top: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <i class="fas fa-laptop" style="font-size: 20px; color: var(--primary);"></i>
-                            <div>
-                                <div style="font-weight: 600; font-size: 14px;">MacBook Pro</div>
-                                <div style="font-size: 12px; color: var(--text-secondary);">Baton Rouge, LA • Current session</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <i class="fas fa-mobile-alt" style="font-size: 20px; color: var(--text-secondary);"></i>
-                            <div>
-                                <div style="font-weight: 600; font-size: 14px;">iPhone 15 Pro</div>
-                                <div style="font-size: 12px; color: var(--text-secondary);">Lafayette, LA • Last active 2 hours ago</div>
-                            </div>
-                        </div>
-                        <button class="btn btn-danger" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">
-                            Revoke
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Danger Zone</h2>
-            <div class="service-card" style="border-color: var(--danger);">
-                <h3 style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Delete Account</h3>
-                <p>Permanently delete your account and all associated data</p>
-                <button class="btn btn-danger" style="width: 100%;">
-                    <i class="fas fa-trash"></i> Delete Account
-                </button>
-            </div>
-        </div>
-
-        <!-- Vault View -->
-        <div id="vault" class="view">
-            <div class="page-header">
-                <h1>Secure Vault</h1>
-                <p>AES-256-GCM encrypted storage</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Secret
-                    </button>
-                </div>
-            </div>
-
-            <div style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 1px solid #6ee7b7; border-radius: 16px; padding: 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
-                <div style="width: 40px; height: 40px; background: var(--success); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <i class="fas fa-shield-alt" style="color: white;"></i>
-                </div>
+    <!-- Chat Panel (from AutoMeaux) -->
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="chat-avatar">AI</div>
                 <div>
-                    <h3 style="font-size: 15px; font-weight: 600; color: #065f46; margin-bottom: 2px;">Zero-Knowledge Encryption</h3>
-                    <p style="font-size: 13px; color: #047857; margin: 0;">Client-side encrypted secrets</p>
+                    <div class="chat-name">Dev Assistant</div>
+                    <div class="chat-status">Always here to help</div>
                 </div>
             </div>
-
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                    <div style="display: flex; gap: 12px;">
-                        <span style="font-size: 28px;">🔑</span>
-                        <div>
-                            <h3 style="margin: 0; font-size: 16px;">Stripe API Key</h3>
-                            <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">API Key</p>
-                        </div>
-                    </div>
-                    <span style="padding: 4px 10px; background: #f3e8ff; color: #7c3aed; font-size: 11px; font-weight: 600; border-radius: 12px;">Team</span>
-                </div>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
-                    <i class="fas fa-clock"></i> Accessed 2 days ago
-                </p>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-secondary">View</button>
-                    <button class="btn btn-danger">Delete</button>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                    <div style="display: flex; gap: 12px;">
-                        <span style="font-size: 28px;">🎫</span>
-                        <div>
-                            <h3 style="margin: 0; font-size: 16px;">GitHub Token</h3>
-                            <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">Token</p>
-                        </div>
-                    </div>
-                    <span style="padding: 4px 10px; background: #f3e8ff; color: #7c3aed; font-size: 11px; font-weight: 600; border-radius: 12px;">Team</span>
-                </div>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
-                    <i class="fas fa-clock"></i> Accessed yesterday
-                </p>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-secondary">View</button>
-                    <button class="btn btn-danger">Delete</button>
+            <button class="chat-close" id="chatClose">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message assistant">
+                <div class="message-avatar">AI</div>
+                <div class="message-content">
+                    <p>Hey! I'm your persistent dev assistant. I'll follow you across all pages in AutoMeaux. Ask me about deployments, code generation, or anything else!</p>
+                    <div class="message-time">Just now</div>
                 </div>
             </div>
         </div>
-
-        <!-- Stripe View -->
-        <div id="stripe" class="view">
-            <div class="page-header">
-                <h1>Stripe Payments</h1>
-                <p>Payment processing</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fab fa-stripe"></i> Open Dashboard
-                    </button>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">This Month Revenue</div>
-                    <div class="stat-value">$12,450</div>
-                    <div class="stat-change">+18% from last month</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Total Transactions</div>
-                    <div class="stat-value">156</div>
-                    <div class="stat-change">+24 this week</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Success Rate</div>
-                    <div class="stat-value">98.7%</div>
-                    <div class="stat-change">Excellent</div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Recent Transactions</h2>
-            <div class="service-card">
-                <h3>Grant Payment</h3>
-                <p>$500 • 2 hours ago</p>
-            </div>
-
-            <div class="service-card">
-                <h3>Donation</h3>
-                <p>$100 • 5 hours ago</p>
-            </div>
-
-            <div class="service-card">
-                <h3>Monthly Subscription</h3>
-                <p>$29 • Yesterday</p>
-            </div>
+        <div class="chat-input-container">
+            <textarea class="chat-input" id="chatInput" placeholder="Ask me anything..."></textarea>
+            <button class="chat-send" id="chatSend">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
         </div>
-
-        <!-- Supabase View -->
-        <div id="supabase" class="view">
-            <div class="page-header">
-                <h1>Supabase</h1>
-                <p>Database & authentication</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-external-link-alt"></i> Open Console
-                    </button>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Tables</div>
-                    <div class="stat-value">8</div>
-                    <div class="stat-change">Active</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Total Rows</div>
-                    <div class="stat-value">2,456</div>
-                    <div class="stat-change">Growing</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Storage Used</div>
-                    <div class="stat-value">124 MB</div>
-                    <div class="stat-change">Optimized</div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Database Tables</h2>
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="margin: 0;">profiles</h3>
-                    <span style="color: var(--text-secondary); font-size: 14px;">8 rows</span>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="margin: 0;">messages</h3>
-                    <span style="color: var(--text-secondary); font-size: 14px;">324 rows</span>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="margin: 0;">tasks</h3>
-                    <span style="color: var(--text-secondary); font-size: 14px;">67 rows</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Vercel View -->
-        <div id="vercel" class="view">
-            <div class="page-header">
-                <h1>Vercel</h1>
-                <p>Deployments & hosting</p>
-                <div class="header-actions">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-rocket"></i> Deploy Now
-                    </button>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <span style="padding: 4px 12px; background: #dcfce7; color: #166534; font-size: 12px; font-weight: 600; border-radius: 12px;">
-                        <i class="fas fa-circle"></i> Ready
-                    </span>
-                    <span style="color: var(--text-secondary); font-size: 13px;">Deployed 2 hours ago</span>
-                </div>
-                <div style="background: var(--bg); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; margin-bottom: 12px;">
-                    main@a1b2c3d
-                </div>
-                <button class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-external-link-alt"></i> Visit Production
-                </button>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Deployments</div>
-                    <div class="stat-value">247</div>
-                    <div class="stat-change">99.2% success</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Avg Build Time</div>
-                    <div class="stat-value">45s</div>
-                    <div class="stat-change">Fast</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">This Week</div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-change">+3 from last week</div>
-                </div>
-            </div>
-        </div>
-
-    </main>
+    </div>
 
     <script>
-        // Mobile menu toggle
-        const hamburger = document.getElementById('hamburgerBtn');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        // Chat panel functionality (from AutoMeaux)
+        const agentToolbox = document.getElementById('agentToolbox');
+        const chatPanel = document.getElementById('chatPanel');
+        const chatClose = document.getElementById('chatClose');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        const chatMessages = document.getElementById('chatMessages');
 
-        function toggleMenu() {
-            hamburger.classList.toggle('active');
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        agentToolbox.addEventListener('click', () => {
+            const isActive = chatPanel.classList.toggle('active');
+            agentToolbox.classList.toggle('active', isActive);
+        });
+
+        chatClose.addEventListener('click', () => {
+            chatPanel.classList.remove('active');
+            agentToolbox.classList.remove('active');
+        });
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message user';
+            userMsg.innerHTML = `
+                <div class="message-content">
+                    <p>${message}</p>
+                </div>
+            `;
+            chatMessages.appendChild(userMsg);
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Simulate AI response
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'chat-message assistant';
+                aiMsg.innerHTML = `
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <p>I'm here to help with your autonomous coding agent! What would you like to know?</p>
+                    </div>
+                `;
+                chatMessages.appendChild(aiMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
         }
 
-        hamburger.addEventListener('click', toggleMenu);
-        sidebarOverlay.addEventListener('click', toggleMenu);
-
-        // View switching
-        function switchView(viewName) {
-            // Hide all views
-            document.querySelectorAll('.view').forEach(view => {
-                view.classList.remove('active');
-            });
-
-            // Show selected view
-            document.getElementById(viewName).classList.add('active');
-
-            // Update sidebar active state
-            document.querySelectorAll('.sidebar-link').forEach(link => {
-                link.classList.remove('active');
-            });
-
-            document.querySelector(`[data-view="${viewName}"]`)?.classList.add('active');
-
-            // Close mobile menu
-            if (window.innerWidth < 1024) {
-                toggleMenu();
-            }
-
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Add click handlers to all sidebar links
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-            link.addEventListener('click', function(e) {
+        chatSend.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                const viewName = this.getAttribute('data-view');
-                switchView(viewName);
-            });
-        });
-
-        // Add profile click handler
-        document.querySelector('.profile-info').addEventListener('click', function(e) {
-            e.preventDefault();
-            const viewName = this.getAttribute('data-view');
-            switchView(viewName);
-        });
-
-        // Add hover effect to profile
-        document.querySelector('.profile-info').addEventListener('mouseenter', function() {
-            this.style.background = 'rgba(31, 151, 169, 0.08)';
-        });
-        
-        document.querySelector('.profile-info').addEventListener('mouseleave', function() {
-            this.style.background = 'var(--bg)';
-        });
-
-        // Add click handlers to quick actions
-        document.querySelectorAll('.quick-action').forEach(action => {
-            action.addEventListener('click', function() {
-                const viewName = this.getAttribute('data-view');
-                if (viewName) {
-                    switchView(viewName);
-                }
-            });
-        });
-
-        // Close sidebar on window resize to desktop
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1024) {
-                sidebar.classList.remove('active');
-                sidebarOverlay.classList.remove('active');
-                hamburger.classList.remove('active');
-                document.body.style.overflow = '';
+                sendMessage();
             }
-        });
-
-        // Touch feedback
-        document.querySelectorAll('.btn, .quick-action, .service-card').forEach(element => {
-            element.addEventListener('touchstart', function() {
-                this.style.opacity = '0.7';
-            });
-            
-            element.addEventListener('touchend', function() {
-                this.style.opacity = '1';
-            });
-            
-            element.addEventListener('touchcancel', function() {
-                this.style.opacity = '1';
-            });
         });
     </script>
-
 </body>
 </html>
