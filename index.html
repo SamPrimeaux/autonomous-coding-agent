@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meaux Access - Team Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #1F97A9;
+            --primary-dark: #186F7D;
+            --primary-light: #26B4C9;
+            --accent: #FF7619;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .hamburger {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(31, 151, 169, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .header-notification {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .header-notification:hover {
+            background: var(--bg);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 64px;
+            bottom: 0;
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 20px 0 0 0;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 999;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 998;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Profile in Sidebar */
+        .sidebar-profile {
+            padding: 0 16px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .profile-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(31, 151, 169, 0.3);
+        }
+
+        .profile-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-role {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            min-height: 48px;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link:active {
+            background: rgba(31, 151, 169, 0.08);
+            color: var(--primary);
+        }
+
+        .sidebar-link.active {
+            background: rgba(31, 151, 169, 0.12);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .sidebar-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .storage-widget {
+            margin: 0 16px 16px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .storage-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .storage-header span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .storage-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .storage-fill {
+            height: 100%;
+            width: 52%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 999px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 64px;
+            padding: 20px 16px 80px;
+            min-height: calc(100vh - 64px);
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .quick-action {
+            background: white;
+            padding: 20px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .quick-action:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .quick-action-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .quick-action h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .quick-action p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .stat-change {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            min-height: 44px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 12px rgba(31, 151, 169, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(31, 151, 169, 0.1);
+            color: var(--primary);
+            flex: 1;
+        }
+
+        .btn-danger {
+            background: #fee;
+            color: var(--danger);
+        }
+
+        /* Service Cards */
+        .service-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .service-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .service-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Chat */
+        .chat-container {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .message-author {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .message-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-input-container {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: none;
+            min-height: 44px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--primary);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Board Columns */
+        .board-container {
+            overflow-x: auto;
+            margin: -20px -16px 0;
+            padding: 20px 16px;
+        }
+
+        .board-columns {
+            display: flex;
+            gap: 16px;
+            min-width: min-content;
+        }
+
+        .board-column {
+            width: 280px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+            max-height: calc(100vh - 220px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-title {
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-count {
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .column-cards {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .task-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: grab;
+        }
+
+        .task-card:active {
+            cursor: grabbing;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .task-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .task-priority {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .priority-high { background: #fee2e2; color: #991b1b; }
+        .priority-medium { background: #fef3c7; color: #92400e; }
+        .priority-low { background: #dbeafe; color: #1e40af; }
+
+        /* Photo Gallery */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 12px;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            background: white;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 32px 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .upload-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 16px;
+            background: rgba(31, 151, 169, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Tablet & Desktop */
+        @media (min-width: 640px) {
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .photo-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .hamburger {
+                display: none;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+                position: fixed;
+                width: 280px;
+            }
+
+            .sidebar-overlay {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 280px;
+                padding: 32px;
+            }
+
+            .logo {
+                justify-content: flex-start;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .photo-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+
+            .page-header h1 {
+                font-size: 32px;
+            }
+
+            .page-header p {
+                font-size: 16px;
+            }
+        }
+
+        /* iOS Safe Area */
+        @supports (padding: max(0px)) {
+            .header {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+
+            .main-content {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+                padding-bottom: max(80px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <div class="logo-text">
+                    <h1>Meaux Access</h1>
+                </div>
+            </div>
+
+            <button class="header-notification">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <span class="notification-dot"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Profile Section -->
+        <div class="sidebar-profile">
+            <div class="profile-info" data-view="settings" style="cursor: pointer; transition: all 0.2s;">
+                <div class="profile-avatar">SP</div>
+                <div class="profile-details">
+                    <div class="profile-name">Sam Primeaux</div>
+                    <div class="profile-role">CEO & Founder</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Workspace</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a class="sidebar-link active" data-view="overview">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>Overview</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="meoxtalk">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 10H8.01M12 10H12.01M16 10H16.01M9 16H5C4.46957 16 3.96086 15.7893 3.58579 15.4142C3.21071 15.0391 3 14.5304 3 14V6C3 5.46957 3.21071 4.96086 3.58579 4.58579C3.96086 4.21071 4.46957 4 5 4H19C19.5304 4 20.0391 4.21071 20.4142 4.58579C20.7893 4.96086 21 5.46957 21 6V14C21 14.5304 20.7893 15.0391 20.4142 15.4142C20.0391 15.7893 19.5304 16 19 16H14L9 21V16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>MeauxTalk</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="meauxboard">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <rect x="3" y="13" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <rect x="13" y="3" width="7" height="16" rx="1" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>MeauxBoard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="meauxdocs">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 12H15M9 16H15M17 21H7C6.46957 21 5.96086 20.7893 5.58579 20.4142C5.21071 20.0391 5 19.5304 5 19V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 5.46957 3 6 3H14L19 8V19C19 19.5304 18.7893 20.0391 18.4142 20.4142C18.0391 20.7893 17.5304 21 17 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>MeauxDocs</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="meauxphoto">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="9" cy="10" r="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M3 15L7 11L11 15L15 11L21 17V17C21 18.1046 20.1046 19 19 19H5C3.89543 19 3 18.1046 3 17V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>MeauxPhoto</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Communications</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="mail">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Mail</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="calendar">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="6" width="18" height="15" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M3 10H21M8 3V6M16 3V6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>Calendar</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="meet">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 10L19.5528 7.72361C20.2177 7.39116 21 7.87465 21 8.61803V15.382C21 16.1253 20.2177 16.6088 19.5528 16.2764L15 14M5 18H13C14.1046 18 15 17.1046 15 16V8C15 6.89543 14.1046 6 13 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Meet</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Storage & Services</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="meauxcloud">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 15C3 17.8284 4.64162 20.2663 7 21.2361M21 15C21 17.8284 19.3584 20.2663 17 21.2361M7 21.2361C7.87568 21.7044 8.90632 22 10 22H14C15.0937 22 16.1243 21.7044 17 21.2361M7 21.2361C4.79086 20.3884 3 18.3859 3 16V13.5C3 11.0147 4.79086 9.01224 7 8.16442M17 21.2361C19.2091 20.3884 21 18.3859 21 16V13.5C21 11.0147 19.2091 9.01224 17 8.16442M7 8.16442C7.87568 7.69555 8.90632 7.4 10 7.4H14C15.0937 7.4 16.1243 7.69555 17 8.16442M12 2V7.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>MeauxCloud</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="vault">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Secure Vault</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="wallet">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M2 10H22M7 15H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>Wallet</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Integrations</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="stripe">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M2 10H22M7 15H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>Stripe</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="supabase">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 7V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V7M4 7H20M4 7L6 5H18L20 7M9 11V15M12 9V15M15 13V15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>Supabase</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="vercel">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 3L3 21H21L12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Vercel</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Account</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a class="sidebar-link" data-view="settings">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="storage-widget">
+            <div class="storage-header">
+                <span style="color: var(--text);">Storage</span>
+                <span style="color: var(--text-secondary);">2.1 / 4 TB</span>
+            </div>
+            <div class="storage-bar">
+                <div class="storage-fill"></div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Overview View -->
+        <div id="overview" class="view active">
+            <div class="page-header">
+                <h1>Dashboard Overview</h1>
+                <p>Welcome back, Sam!</p>
+            </div>
+
+            <div class="quick-actions">
+                <div class="quick-action" data-view="meoxtalk">
+                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 10H8.01M12 10H12.01M16 10H16.01M9 16H5C4.46957 16 3.96086 15.7893 3.58579 15.4142C3.21071 15.0391 3 14.5304 3 14V6C3 5.46957 3.21071 4.96086 3.58579 4.58579C3.96086 4.21071 4.46957 4 5 4H19C19.5304 4 20.0391 4.21071 20.4142 4.58579C20.7893 4.96086 21 5.46957 21 6V14C21 14.5304 20.7893 15.0391 20.4142 15.4142C20.0391 15.7893 19.5304 16 19 16H14L9 21V16Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Team Chat</h3>
+                    <p>MeauxTalk</p>
+                </div>
+
+                <div class="quick-action" data-view="meauxboard">
+                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #1F97A9, #26B4C9);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/>
+                            <rect x="3" y="13" width="7" height="7" rx="1" stroke="white" stroke-width="2"/>
+                            <rect x="13" y="3" width="7" height="16" rx="1" stroke="white" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Projects</h3>
+                    <p>MeauxBoard</p>
+                </div>
+
+                <div class="quick-action" data-view="meauxphoto">
+                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="white" stroke-width="2"/>
+                            <circle cx="9" cy="10" r="2" stroke="white" stroke-width="2"/>
+                            <path d="M3 15L7 11L11 15L15 11L21 17V17C21 18.1046 20.1046 19 19 19H5C3.89543 19 3 18.1046 3 17V15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Images</h3>
+                    <p>MeauxPhoto</p>
+                </div>
+
+                <div class="quick-action" data-view="meet">
+                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 10L19.5528 7.72361C20.2177 7.39116 21 7.87465 21 8.61803V15.382C21 16.1253 20.2177 16.6088 19.5528 16.2764L15 14M5 18H13C14.1046 18 15 17.1046 15 16V8C15 6.89543 14.1046 6 13 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Video</h3>
+                    <p>Meet</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Assets</div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-change">+12% this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Active Projects</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">+3 this week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Team Members</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-change">All active</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MeauxTalk View -->
+        <div id="meoxtalk" class="view">
+            <div class="page-header">
+                <h1>MeauxTalk</h1>
+                <p>Team messaging</p>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages">
+                    <div class="message">
+                        <div class="message-avatar">S</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Sam</span>
+                                <span class="message-time">9:41 AM</span>
+                            </div>
+                            <div class="message-text">Ready to launch Meaux Access today!</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar" style="background: #64748b;">C</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Connor</span>
+                                <span class="message-time">9:43 AM</span>
+                            </div>
+                            <div class="message-text">All integrations are live and tested!</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar" style="background: var(--accent);">F</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Fred</span>
+                                <span class="message-time">9:45 AM</span>
+                            </div>
+                            <div class="message-text">The design looks amazing!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea class="chat-input" placeholder="Message the team..." rows="1"></textarea>
+                        <button class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MeauxBoard View -->
+        <div id="meauxboard" class="view">
+            <div class="page-header">
+                <h1>MeauxBoard</h1>
+                <p>Project management</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Task
+                    </button>
+                </div>
+            </div>
+
+            <div class="board-container">
+                <div class="board-columns">
+                    <div class="board-column">
+                        <div class="column-header">
+                            <div class="column-title">
+                                📋 To Do
+                                <span class="column-count">3</span>
+                            </div>
+                        </div>
+                        <div class="column-cards">
+                            <div class="task-card">
+                                <div class="task-title">Setup Cloudflare R2</div>
+                                <div class="task-description">Configure storage buckets</div>
+                                <div class="task-meta">
+                                    <span>Sam</span>
+                                    <span class="task-priority priority-high">High</span>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-title">Email Templates</div>
+                                <div class="task-description">Design team communications</div>
+                                <div class="task-meta">
+                                    <span>Fred</span>
+                                    <span class="task-priority priority-medium">Medium</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="board-column">
+                        <div class="column-header">
+                            <div class="column-title">
+                                ⚙️ In Progress
+                                <span class="column-count">2</span>
+                            </div>
+                        </div>
+                        <div class="column-cards">
+                            <div class="task-card">
+                                <div class="task-title">MeauxTalk Integration</div>
+                                <div class="task-description">Connect messaging with Supabase</div>
+                                <div class="task-meta">
+                                    <span>Connor</span>
+                                    <span class="task-priority priority-high">High</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="board-column">
+                        <div class="column-header">
+                            <div class="column-title">
+                                ✅ Done
+                                <span class="column-count">4</span>
+                            </div>
+                        </div>
+                        <div class="column-cards">
+                            <div class="task-card" style="opacity: 0.7;">
+                                <div class="task-title">Meaux Access Logo</div>
+                                <div class="task-description">Cloud logo with M lettermark</div>
+                                <div class="task-meta">
+                                    <span>Fred</span>
+                                    <span class="task-priority priority-high">High</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MeauxDocs View -->
+        <div id="meauxdocs" class="view">
+            <div class="page-header">
+                <h1>MeauxDocs</h1>
+                <p>Team documentation</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Doc
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-folder"></i> Browse
+                    </button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <h3>Brand Guidelines</h3>
+                <p>Updated 2 hours ago</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-edit"></i> Open Document
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3>Team Handbook</h3>
+                <p>Updated yesterday</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-edit"></i> Open Document
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3>API Documentation</h3>
+                <p>Updated 3 days ago</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-edit"></i> Open Document
+                </button>
+            </div>
+        </div>
+
+        <!-- MeauxPhoto View -->
+        <div id="meauxphoto" class="view">
+            <div class="page-header">
+                <h1>MeauxPhoto</h1>
+                <p>Image optimization & management</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        Upload Images
+                    </button>
+                    <button class="btn btn-secondary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                        Batch Optimize
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Images</div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-change">+24 this week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Storage Saved</div>
+                    <div class="stat-value">4.2 GB</div>
+                    <div class="stat-change">68% compression</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Optimized</div>
+                    <div class="stat-value">892</div>
+                    <div class="stat-change">71% of total</div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Recent Uploads</h2>
+            <div class="photo-grid">
+                <div class="photo-item" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <div class="photo-overlay">
+                        <div style="font-weight: 600;">hero-banner.jpg</div>
+                        <div style="opacity: 0.8;">1.2 MB → 245 KB</div>
+                    </div>
+                </div>
+                <div class="photo-item" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                    <div class="photo-overlay">
+                        <div style="font-weight: 600;">product-shot.png</div>
+                        <div style="opacity: 0.8;">890 KB → 178 KB</div>
+                    </div>
+                </div>
+                <div class="photo-item" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                    <div class="photo-overlay">
+                        <div style="font-weight: 600;">team-photo.jpg</div>
+                        <div style="opacity: 0.8;">2.1 MB → 412 KB</div>
+                    </div>
+                </div>
+                <div class="photo-item" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                    <div class="photo-overlay">
+                        <div style="font-weight: 600;">logo-variations.svg</div>
+                        <div style="opacity: 0.8;">Vector • Optimized</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Optimization Tools</h2>
+            <div class="service-card">
+                <h3><i class="fas fa-compress-alt"></i> Smart Compression</h3>
+                <p>Automatically compress images without quality loss using advanced algorithms</p>
+                <button class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-cog"></i> Configure Settings
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3><i class="fas fa-crop"></i> Batch Resize</h3>
+                <p>Resize multiple images to specific dimensions for web, social, or print</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-play"></i> Start Batch Process
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3><i class="fas fa-palette"></i> Format Conversion</h3>
+                <p>Convert images between formats: JPG, PNG, WebP, AVIF, SVG</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-exchange-alt"></i> Convert Images
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3><i class="fas fa-tachometer-alt"></i> CDN Integration</h3>
+                <p>Automatically serve optimized images via Cloudflare CDN for faster loading</p>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button class="btn btn-primary" style="flex: 1;">
+                        <i class="fas fa-check"></i> Enabled
+                    </button>
+                    <button class="btn btn-secondary" style="flex: 1;">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mail View -->
+        <div id="mail" class="view">
+            <div class="page-header">
+                <h1>Team Mail</h1>
+                <p>@meauxbility.org & @inneranimals.com</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Add Member
+                    </button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">S</div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px;">Sam Primeaux</h3>
+                        <p style="margin: 0; font-family: monospace; font-size: 13px;">sam@meauxbility.org</p>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-envelope"></i> View Mail
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #64748b; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">C</div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px;">Connor McNeely</h3>
+                        <p style="margin: 0; font-family: monospace; font-size: 13px;">connor@meauxbility.org</p>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-envelope"></i> View Mail
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">F</div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px;">Fred Williams</h3>
+                        <p style="margin: 0; font-family: monospace; font-size: 13px;">fred@inneranimals.com</p>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-envelope"></i> View Mail
+                </button>
+            </div>
+        </div>
+
+        <!-- Calendar View -->
+        <div id="calendar" class="view">
+            <div class="page-header">
+                <h1>Calendar</h1>
+                <p>Team schedule</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Event
+                    </button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <h3><i class="fas fa-video"></i> Team Standup</h3>
+                <p><i class="fas fa-clock"></i> Today, 10:00 AM</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-video"></i> Join Meeting
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3><i class="fas fa-presentation"></i> Client Demo</h3>
+                <p><i class="fas fa-clock"></i> Nov 17, 2:00 PM</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-eye"></i> View Details
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3><i class="fas fa-tasks"></i> Sprint Planning</h3>
+                <p><i class="fas fa-clock"></i> Nov 20, 9:00 AM</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-eye"></i> View Details
+                </button>
+            </div>
+        </div>
+
+        <!-- Meet View -->
+        <div id="meet" class="view">
+            <div class="page-header">
+                <h1>Meet</h1>
+                <p>Video conferencing</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Room
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-sign-in-alt"></i> Join Room
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: #000; border-radius: 16px; height: 300px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 24px;">
+                <div style="text-align: center;">
+                    <i class="fas fa-video" style="font-size: 48px; margin-bottom: 16px;"></i>
+                    <p>Camera preview</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Meetings Today</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-change">2 upcoming</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Total This Week</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">+3 from last week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Avg Duration</div>
+                    <div class="stat-value">45m</div>
+                    <div class="stat-change">Efficient!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MeauxCloud View -->
+        <div id="meauxcloud" class="view">
+            <div class="page-header">
+                <h1>MeauxCloud</h1>
+                <p>Unified cloud storage</p>
+            </div>
+
+            <div class="upload-area">
+                <div class="upload-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3 style="font-size: 17px; margin-bottom: 6px;">Upload Files</h3>
+                <p style="margin-bottom: 16px;">Tap to select or drag & drop</p>
+                <button class="btn btn-secondary" style="max-width: 200px;">
+                    <i class="fas fa-folder"></i> Browse Files
+                </button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="35,20 65,20 85,60 50,60" fill="#4285f4"/>
+                            <polygon points="15,60 50,60 35,87" fill="#34a853"/>
+                            <polygon points="50,60 85,60 70,87 35,87" fill="#fbbc04"/>
+                        </svg>
+                        <div>
+                            <div class="stat-label" style="margin: 0;">Google Drive</div>
+                            <div style="font-size: 18px; font-weight: 600;">2.1 / 4 TB</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" style="width: 100%;">
+                        <i class="fab fa-google-drive"></i> Open Drive
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 70 45 C 70 38 65 32 58 32 C 57 32 56 32 55 32 C 53 25 47 20 40 20 C 31 20 24 27 24 36 C 24 37 24 38 24 39 C 18 40 14 45 14 51 C 14 58 19 64 26 64 L 68 64 C 77 64 84 57 84 48 C 84 40 78 34 70 33 Z" fill="#000000"/>
+                        </svg>
+                        <div>
+                            <div class="stat-label" style="margin: 0;">iCloud</div>
+                            <div style="font-size: 18px; font-weight: 600;">1.8 / 4 TB</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" style="width: 100%;">
+                        <i class="fas fa-cloud"></i> Open iCloud
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="40" fill="#f38020"/>
+                            <path d="M 30 50 Q 35 35, 50 35 Q 65 35, 70 50 Q 65 65, 50 65 Q 35 65, 30 50" fill="white"/>
+                        </svg>
+                        <div>
+                            <div class="stat-label" style="margin: 0;">Cloudflare R2</div>
+                            <div style="font-size: 18px; font-weight: 600;">Unlimited</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-plug"></i> Connect
+                    </button>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Recent Files</h2>
+            <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 48px; height: 48px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-file-pdf" style="font-size: 24px; color: var(--danger);"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0; font-size: 16px;">Brand-Guidelines-2025.pdf</h3>
+                        <p style="margin: 0;">Google Drive • Updated 2 hours ago</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 48px; height: 48px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-file-image" style="font-size: 24px; color: var(--primary);"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0; font-size: 16px;">meaux-logo-final.svg</h3>
+                        <p style="margin: 0;">iCloud • Updated yesterday</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 48px; height: 48px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-file-word" style="font-size: 24px; color: #2b579a;"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0; font-size: 16px;">Project-Proposal-Q4.docx</h3>
+                        <p style="margin: 0;">Google Drive • Updated 3 days ago</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet View -->
+        <div id="wallet" class="view">
+            <div class="page-header">
+                <h1>Wallet</h1>
+                <p>Financial tracking & transactions</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Balance</div>
+                    <div class="stat-value">$8,240</div>
+                    <div class="stat-change">Available</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">This Month</div>
+                    <div class="stat-value">$12,450</div>
+                    <div class="stat-change">+18% revenue</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value">$2,100</div>
+                    <div class="stat-change">3 transactions</div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Recent Transactions</h2>
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px;">Grant Payment</h3>
+                        <p style="margin: 0; font-size: 13px;">Meauxbility Grant #2024-11</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 600; color: var(--success);">+$500</div>
+                        <p style="margin: 0; font-size: 12px;">2 hours ago</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px;">Donation</h3>
+                        <p style="margin: 0; font-size: 13px;">Individual Donor</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 600; color: var(--success);">+$100</div>
+                        <p style="margin: 0; font-size: 12px;">5 hours ago</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px;">Stripe Fee</h3>
+                        <p style="margin: 0; font-size: 13px;">Processing charges</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 600; color: var(--danger);">-$18.50</div>
+                        <p style="margin: 0; font-size: 12px;">Yesterday</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 16px;">Monthly Subscription</h3>
+                        <p style="margin: 0; font-size: 13px;">Inner Animals Member</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 600; color: var(--success);">+$29</div>
+                        <p style="margin: 0; font-size: 12px;">2 days ago</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settings" class="view">
+            <div class="page-header">
+                <h1>Settings</h1>
+                <p>Account & preferences</p>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Profile</h2>
+            <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 32px; box-shadow: 0 4px 12px rgba(31, 151, 169, 0.3);">
+                        SP
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 4px 0; font-size: 20px;">Sam Primeaux</h3>
+                        <p style="margin: 0 0 8px 0;">CEO & Founder</p>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; min-height: 36px;">
+                            <i class="fas fa-camera"></i> Change Photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Account Information</h2>
+            <div class="service-card">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Full Name</label>
+                    <input type="text" value="Sam Primeaux" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Email</label>
+                    <input type="email" value="sam@meauxbility.org" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Role</label>
+                    <input type="text" value="CEO & Founder" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px;">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Preferences</h2>
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                    <div>
+                        <h3 style="margin: 0; font-size: 15px;">Email Notifications</h3>
+                        <p style="margin: 0; font-size: 13px;">Receive updates via email</p>
+                    </div>
+                    <label style="position: relative; display: inline-block; width: 48px; height: 28px;">
+                        <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--primary); border-radius: 28px; transition: 0.3s;"></span>
+                        <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: 0.3s; transform: translateX(20px);"></span>
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                    <div>
+                        <h3 style="margin: 0; font-size: 15px;">Push Notifications</h3>
+                        <p style="margin: 0; font-size: 13px;">Browser notifications</p>
+                    </div>
+                    <label style="position: relative; display: inline-block; width: 48px; height: 28px;">
+                        <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--primary); border-radius: 28px; transition: 0.3s;"></span>
+                        <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: 0.3s; transform: translateX(20px);"></span>
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 15px;">Dark Mode</h3>
+                        <p style="margin: 0; font-size: 13px;">Use dark theme</p>
+                    </div>
+                    <label style="position: relative; display: inline-block; width: 48px; height: 28px;">
+                        <input type="checkbox" style="opacity: 0; width: 0; height: 0;">
+                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #cbd5e1; border-radius: 28px; transition: 0.3s;"></span>
+                        <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: 0.3s;"></span>
+                    </label>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Security</h2>
+            <div class="service-card">
+                <h3><i class="fas fa-key"></i> Change Password</h3>
+                <p>Update your password to keep your account secure</p>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-lock"></i> Change Password
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3><i class="fas fa-shield-alt"></i> Two-Factor Authentication</h3>
+                <p>Add an extra layer of security to your account</p>
+                <button class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-mobile-alt"></i> Enable 2FA
+                </button>
+            </div>
+
+            <div class="service-card">
+                <h3><i class="fas fa-clock"></i> Active Sessions</h3>
+                <p>Manage devices where you're signed in</p>
+                <div style="padding: 12px 0; border-top: 1px solid var(--border); margin-top: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-laptop" style="font-size: 20px; color: var(--primary);"></i>
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px;">MacBook Pro</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Baton Rouge, LA • Current session</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-mobile-alt" style="font-size: 20px; color: var(--text-secondary);"></i>
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px;">iPhone 15 Pro</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Lafayette, LA • Last active 2 hours ago</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">
+                            Revoke
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Danger Zone</h2>
+            <div class="service-card" style="border-color: var(--danger);">
+                <h3 style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Delete Account</h3>
+                <p>Permanently delete your account and all associated data</p>
+                <button class="btn btn-danger" style="width: 100%;">
+                    <i class="fas fa-trash"></i> Delete Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Vault View -->
+        <div id="vault" class="view">
+            <div class="page-header">
+                <h1>Secure Vault</h1>
+                <p>AES-256-GCM encrypted storage</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Secret
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 1px solid #6ee7b7; border-radius: 16px; padding: 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; background: var(--success); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-shield-alt" style="color: white;"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 15px; font-weight: 600; color: #065f46; margin-bottom: 2px;">Zero-Knowledge Encryption</h3>
+                    <p style="font-size: 13px; color: #047857; margin: 0;">Client-side encrypted secrets</p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div style="display: flex; gap: 12px;">
+                        <span style="font-size: 28px;">🔑</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 16px;">Stripe API Key</h3>
+                            <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">API Key</p>
+                        </div>
+                    </div>
+                    <span style="padding: 4px 10px; background: #f3e8ff; color: #7c3aed; font-size: 11px; font-weight: 600; border-radius: 12px;">Team</span>
+                </div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+                    <i class="fas fa-clock"></i> Accessed 2 days ago
+                </p>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary">View</button>
+                    <button class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div style="display: flex; gap: 12px;">
+                        <span style="font-size: 28px;">🎫</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 16px;">GitHub Token</h3>
+                            <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">Token</p>
+                        </div>
+                    </div>
+                    <span style="padding: 4px 10px; background: #f3e8ff; color: #7c3aed; font-size: 11px; font-weight: 600; border-radius: 12px;">Team</span>
+                </div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+                    <i class="fas fa-clock"></i> Accessed yesterday
+                </p>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary">View</button>
+                    <button class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stripe View -->
+        <div id="stripe" class="view">
+            <div class="page-header">
+                <h1>Stripe Payments</h1>
+                <p>Payment processing</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fab fa-stripe"></i> Open Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">This Month Revenue</div>
+                    <div class="stat-value">$12,450</div>
+                    <div class="stat-change">+18% from last month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Total Transactions</div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-change">+24 this week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Success Rate</div>
+                    <div class="stat-value">98.7%</div>
+                    <div class="stat-change">Excellent</div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Recent Transactions</h2>
+            <div class="service-card">
+                <h3>Grant Payment</h3>
+                <p>$500 • 2 hours ago</p>
+            </div>
+
+            <div class="service-card">
+                <h3>Donation</h3>
+                <p>$100 • 5 hours ago</p>
+            </div>
+
+            <div class="service-card">
+                <h3>Monthly Subscription</h3>
+                <p>$29 • Yesterday</p>
+            </div>
+        </div>
+
+        <!-- Supabase View -->
+        <div id="supabase" class="view">
+            <div class="page-header">
+                <h1>Supabase</h1>
+                <p>Database & authentication</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Open Console
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Tables</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-change">Active</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Total Rows</div>
+                    <div class="stat-value">2,456</div>
+                    <div class="stat-change">Growing</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Storage Used</div>
+                    <div class="stat-value">124 MB</div>
+                    <div class="stat-change">Optimized</div>
+                </div>
+            </div>
+
+            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Database Tables</h2>
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">profiles</h3>
+                    <span style="color: var(--text-secondary); font-size: 14px;">8 rows</span>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">messages</h3>
+                    <span style="color: var(--text-secondary); font-size: 14px;">324 rows</span>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">tasks</h3>
+                    <span style="color: var(--text-secondary); font-size: 14px;">67 rows</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vercel View -->
+        <div id="vercel" class="view">
+            <div class="page-header">
+                <h1>Vercel</h1>
+                <p>Deployments & hosting</p>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Deploy Now
+                    </button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <span style="padding: 4px 12px; background: #dcfce7; color: #166534; font-size: 12px; font-weight: 600; border-radius: 12px;">
+                        <i class="fas fa-circle"></i> Ready
+                    </span>
+                    <span style="color: var(--text-secondary); font-size: 13px;">Deployed 2 hours ago</span>
+                </div>
+                <div style="background: var(--bg); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; margin-bottom: 12px;">
+                    main@a1b2c3d
+                </div>
+                <button class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-external-link-alt"></i> Visit Production
+                </button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Deployments</div>
+                    <div class="stat-value">247</div>
+                    <div class="stat-change">99.2% success</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Avg Build Time</div>
+                    <div class="stat-value">45s</div>
+                    <div class="stat-change">Fast</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">This Week</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">+3 from last week</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleMenu() {
+            hamburger.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        }
+
+        hamburger.addEventListener('click', toggleMenu);
+        sidebarOverlay.addEventListener('click', toggleMenu);
+
+        // View switching
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+
+            // Show selected view
+            document.getElementById(viewName).classList.add('active');
+
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            document.querySelector(`[data-view="${viewName}"]`)?.classList.add('active');
+
+            // Close mobile menu
+            if (window.innerWidth < 1024) {
+                toggleMenu();
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Add click handlers to all sidebar links
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const viewName = this.getAttribute('data-view');
+                switchView(viewName);
+            });
+        });
+
+        // Add profile click handler
+        document.querySelector('.profile-info').addEventListener('click', function(e) {
+            e.preventDefault();
+            const viewName = this.getAttribute('data-view');
+            switchView(viewName);
+        });
+
+        // Add hover effect to profile
+        document.querySelector('.profile-info').addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(31, 151, 169, 0.08)';
+        });
+        
+        document.querySelector('.profile-info').addEventListener('mouseleave', function() {
+            this.style.background = 'var(--bg)';
+        });
+
+        // Add click handlers to quick actions
+        document.querySelectorAll('.quick-action').forEach(action => {
+            action.addEventListener('click', function() {
+                const viewName = this.getAttribute('data-view');
+                if (viewName) {
+                    switchView(viewName);
+                }
+            });
+        });
+
+        // Close sidebar on window resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                hamburger.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Touch feedback
+        document.querySelectorAll('.btn, .quick-action, .service-card').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.style.opacity = '0.7';
+            });
+            
+            element.addEventListener('touchend', function() {
+                this.style.opacity = '1';
+            });
+            
+            element.addEventListener('touchcancel', function() {
+                this.style.opacity = '1';
+            });
+        });
+    </script>
+
+</body>
+</html>
