@@ -2,21 +2,21 @@
 export default function Repos() {
   return `
     <style>
-      .repos-root { padding: 16px; font-family: 'Inter', sans-serif; }
+      .repos-root { padding: 16px; font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text); }
       .repos-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap; }
       .repos-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; }
-      .repo-card { border:1px solid #e2e8f0; border-radius:12px; padding:12px; background:#fff; box-shadow:0 6px 12px rgba(0,0,0,0.04); }
-      .repo-card h3 { margin:0 0 6px 0; font-size:16px; }
-      .repo-meta { color:#64748b; font-size:13px; margin-bottom:8px; }
+      .repo-card { border:1px solid var(--border); border-radius:12px; padding:12px; background: var(--bg-card); box-shadow: var(--shadow-sm); color: var(--text); }
+      .repo-card h3 { margin:0 0 6px 0; font-size:16px; color: var(--text); }
+      .repo-meta { color: var(--text-secondary); font-size:13px; margin-bottom:8px; }
       .repo-actions { display:flex; gap:8px; flex-wrap:wrap; }
-      .repo-btn { padding:8px 10px; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; cursor:pointer; font-size:13px; }
-      .repo-input { padding:8px; border-radius:10px; border:1px solid #e2e8f0; width:100%; box-sizing:border-box; margin-bottom:8px; }
+      .repo-btn { padding:8px 10px; border-radius:10px; border:1px solid var(--border); background: var(--bg-card); cursor:pointer; font-size:13px; color: var(--text); }
+      .repo-input { padding:8px; border-radius:10px; border:1px solid var(--border); width:100%; box-sizing:border-box; margin-bottom:8px; background: var(--bg-card); color: var(--text); }
     </style>
     <div class="repos-root">
       <div class="repos-header">
         <div>
-          <h2 style="margin:0;font-size:18px;">Repos</h2>
-          <div style="color:#64748b;font-size:13px;">GitHub + registry</div>
+          <h2 style="margin:0;font-size:18px; color: var(--text);">Repos</h2>
+          <div style="color: var(--text-secondary);font-size:13px;">GitHub + registry</div>
         </div>
         <button id="repo-create" class="repo-btn">+ Create Repo</button>
       </div>
@@ -45,7 +45,7 @@ async function initRepos() {
       <div class="repo-card">
         <h3>${r.name}</h3>
         <div class="repo-meta">${r.private ? 'Private' : 'Public'} · ${r.language || ''}</div>
-        <div class="repo-meta">Updated: ${r.updated_at ? new Date(r.updated_at).toLocaleString() : ''}</div>
+        <div class="repo-meta">Updated: ${r.updated_at ? new Date(typeof r.updated_at === 'number' ? r.updated_at * 1000 : r.updated_at).toLocaleString() : ''}</div>
         <div class="repo-actions">
           <a class="repo-btn" href="${r.html_url}" target="_blank">Open</a>
           <button class="repo-btn" data-ci="${r.name}">Add CI</button>
