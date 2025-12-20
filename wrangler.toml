@@ -1,20 +1,145 @@
-name = "autonomous-coding-agent"
+name = "hybridprosaas-dashboard-production"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 account_id = "ede6590ac0d2fb7daf155b35653457b2"
 
-# D1 Database binding
+# D1 Databases
 [[d1_databases]]
 binding = "DB"
+database_name = "meauxbility-dashboard-db"
+database_id = "613e4fe1-94f3-4aa1-8dfc-7f321d3bc46f"
+
+[[d1_databases]]
+binding = "INNERANIMAL_APP_LIBRARY_DB"
+database_name = "inneranimalmedia_app_library"
+database_id = "ff10ed0d-fb18-4f94-8e8a-2d8eb2053bef"
+
+[[d1_databases]]
+binding = "INNERANIMAL_ASSETS_DB"
+database_name = "inneranimalmedia-assets"
+database_id = "e0ec00b8-4e3c-422e-abba-70b7548c1f87"
+
+[[d1_databases]]
+binding = "MEAUXABILITY_API_DB"
+database_name = "meauxbility-api-db"
+database_id = "49b16b7d-ecb9-4cc4-b337-559f94854757"
+
+[[d1_databases]]
+binding = "MEAUXACCESS_DB"
+database_name = "meauxaccess-db"
+database_id = "1aaf9981-30f9-49f7-833f-462b523e4abb"
+
+[[d1_databases]]
+binding = "MEAUXBILITYORG_DB"
+database_name = "meauxbilityorg"
+database_id = "011d1629-b5c8-49e7-8f6d-ca311ba936fe"
+
+[[d1_databases]]
+binding = "MEAUXMARKETS_DB"
+database_name = "meauxmarkets_dev"
+database_id = "df192326-00b4-4d68-ad0d-5dd439dc8898"
+
+[[d1_databases]]
+binding = "MEAUX_WORK_DB"
 database_name = "meaux-work-db"
 database_id = "2a3a763a-92f1-4633-849e-268ddb31998f"
 
-# R2 Bucket binding
+[[d1_databases]]
+binding = "MEAUXWORK_DB"
+database_name = "meauxwork-db"
+database_id = "7a8dbae8-9c9c-4872-8824-9dc6fbc62fb2"
+
+[[d1_databases]]
+binding = "SAAS_DB"
+database_name = "meauxstack-saas-db"
+database_id = "ee3e3adb-da99-457d-8c2c-390ff19f6435"
+
+[[d1_databases]]
+binding = "SOUTHERNPETS_DB"
+database_name = "southernpetsanimalrescue"
+database_id = "f01e1fbb-01fb-4900-80e9-bbb90db51bbe"
+
+# R2 Buckets
 [[r2_buckets]]
 binding = "STORAGE"
-bucket_name = "meaux-work-storage"
+bucket_name = "autonomous-coding-agent"
+
+[[r2_buckets]]
+binding = "R2_AUTORAG"
+bucket_name = "meauxlife-appkit"
+
+[[r2_buckets]]
+binding = "R2_3D_MODELS"
+bucket_name = "meauxbility-3d-models"
+
+[[r2_buckets]]
+binding = "R2_AB_FILMS"
+bucket_name = "ab-films-raw"
+
+[[r2_buckets]]
+binding = "R2_ACEMEDICAL"
+bucket_name = "acemedical"
+
+[[r2_buckets]]
+binding = "R2_AMBER_NICOLE"
+bucket_name = "amber-nicole"
+
+[[r2_buckets]]
+binding = "R2_ASSETS"
+bucket_name = "meauxbility-dashboard"
+
+[[r2_buckets]]
+binding = "R2_AUTONOMOUS_AGENT"
+bucket_name = "autonomous-coding-agent"
+
+[[r2_buckets]]
+binding = "R2_BLAIRMANN"
+bucket_name = "blairmannenterprise"
+
+[[r2_buckets]]
+binding = "R2_CHATBOT"
+bucket_name = "autorag-meauxbility-chatbot"
+
+[[r2_buckets]]
+binding = "R2_EVERGREEN"
+bucket_name = "evergreen-landscaping"
+
+[[r2_buckets]]
+binding = "R2_GALAXYDASHBOARD"
+bucket_name = "galaxysaas"
+
+[[r2_buckets]]
+binding = "R2_GRANTWRITING"
+bucket_name = "grantwriting"
+
+[[r2_buckets]]
+binding = "R2_IACCESS"
+bucket_name = "iaccess"
+
+[[r2_buckets]]
+binding = "R2_IAUTODIDACT"
+bucket_name = "iaudodidact-assets"
+
+[[r2_buckets]]
+binding = "R2_ORGANIZATION"
+bucket_name = "entireorganizationimagesandcontentbucket"
+
+[[r2_buckets]]
+binding = "R2_SPLINE_ICONS"
+bucket_name = "splineicons"
+
+# KV Namespaces
+[[kv_namespaces]]
+binding = "KV_CACHE"
+id = "38d3dbd415f148008aec823bd1b245bb"
+
+# Variables
+[vars]
+R2_PUBLIC_BASE_URL = "https://pub-17c0c9f994f04d399682136f077db219.r2.dev"
+CLOUDFLARE_ACCOUNT_ID = "ede6590ac0d2fb7daf155b35653457b2"
+CLOUDFLARE_STREAM_SUBDOMAIN = "customer-8y3087qnrzz7ql2e.cloudflarestream.com"
+ENVIRONMENT = "production"
 
 # AI binding
 [ai]
 binding = "AI"
-

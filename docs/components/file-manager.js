@@ -2,21 +2,22 @@
 export default function FileManager() {
   return `
     <style>
-      .fm-wrap { padding: 20px; font-family: 'Inter', sans-serif; color:#0f172a; }
+      .fm-wrap { padding: 20px; font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text); }
       .fm-layout { display:grid; grid-template-columns: 260px 1fr; gap:14px; }
-      .fm-pane { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:14px; box-shadow:0 10px 30px rgba(15,23,42,0.08); }
+      .fm-pane { background: var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow: var(--shadow-md); }
       .fm-list { list-style:none; padding:0; margin:0; max-height:70vh; overflow:auto; }
-      .fm-list li { padding:10px; border-radius:10px; cursor:pointer; }
-      .fm-list li.active { background:#e0f2fe; }
+      .fm-list li { padding:10px; border-radius:10px; cursor:pointer; color: var(--text); }
+      .fm-list li:hover { background: var(--bg-hover); }
+      .fm-list li.active { background: rgba(31, 151, 169, 0.15); color: var(--primary); }
       .fm-objects { width:100%; border-collapse: collapse; }
-      .fm-objects th, .fm-objects td { padding:8px; border-bottom:1px solid #e2e8f0; text-align:left; font-size:13px; }
+      .fm-objects th, .fm-objects td { padding:8px; border-bottom:1px solid var(--border); text-align:left; font-size:13px; color: var(--text); }
       .fm-toolbar { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
-      .fm-input { padding:8px; border-radius:10px; border:1px solid #e2e8f0; width:100%; }
-      .fm-btn { padding:8px 10px; border-radius:10px; border:1px solid #e2e8f0; background:#0ea5e9; color:white; font-weight:600; cursor:pointer; }
+      .fm-input { padding:8px; border-radius:10px; border:1px solid var(--border); width:100%; background: var(--bg-card); color: var(--text); }
+      .fm-btn { padding:8px 10px; border-radius:10px; border:1px solid var(--border); background: var(--primary); color:white; font-weight:600; cursor:pointer; }
     </style>
     <div class="fm-wrap">
       <h2 style="margin:0 0 8px;">File Manager</h2>
-      <p style="margin:0 0 12px; color:#475569;">Browse R2 buckets and objects inline. For advanced ops, open R2 dashboard.</p>
+      <p style="margin:0 0 12px; color: var(--text-secondary);">Browse R2 buckets and objects inline. For advanced ops, open R2 dashboard.</p>
       <div class="fm-layout">
         <div class="fm-pane">
           <h3 style="margin:0 0 8px;">Buckets</h3>
@@ -28,7 +29,7 @@ export default function FileManager() {
             <button class="fm-btn" id="fm-refresh">Refresh</button>
             <a class="fm-btn" href="/dashboard/r2" data-route="/dashboard/r2" style="background:#1e293b;border-color:#1e293b;">Open R2</a>
           </div>
-          <div id="fm-empty" style="color:#64748b;">Select a bucket to view objects.</div>
+          <div id="fm-empty" style="color: var(--text-secondary);">Select a bucket to view objects.</div>
           <div id="fm-objects-wrap" style="display:none; overflow:auto; max-height:70vh;">
             <table class="fm-objects">
               <thead><tr><th>Key</th><th>Size</th><th>Uploaded</th></tr></thead>
@@ -90,7 +91,7 @@ async function initFileManager() {
       <tr>
         <td>${o.key}</td>
         <td>${formatBytes(o.size || o.size_bytes || 0)}</td>
-        <td>${o.uploaded ? new Date(o.uploaded).toLocaleString() : ''}</td>
+        <td>${o.uploaded ? new Date(typeof o.uploaded === 'number' ? o.uploaded * 1000 : o.uploaded).toLocaleString() : ''}</td>
       </tr>
     `).join('') || `<tr><td colspan="3">No objects</td></tr>`;
   }
@@ -538,7 +539,7 @@ function viewFile(file) {
     padding: 20px;
   `;
   modal.innerHTML = `
-    <div style="background: white; border-radius: 12px; max-width: 800px; max-height: 80vh; overflow: auto; padding: 24px; width: 100%;">
+    <div style="background: var(--bg-card); border-radius: 12px; max-width: 800px; max-height: 80vh; overflow: auto; padding: 24px; width: 100%; border: 1px solid var(--border);">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
         <h2 style="margin: 0;">${escapeHtml(file.name)}</h2>
         <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer;">�</button>

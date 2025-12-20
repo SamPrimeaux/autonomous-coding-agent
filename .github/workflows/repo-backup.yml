@@ -1,0 +1,221 @@
+name: Multitenant Repository Backup to R2
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  paths-ignore:
+    - '**.md'
+    - '.gitignore'
+    - 'README.md'
+  workflow_dispatch:
+    inputs:
+      tenant:
+        description: 'Tenant/Repository name'
+        required: false
+        default: ''
+      bucket:
+        description: 'R2 bucket name (optional, auto-detected)'
+        required: false
+        default: ''
+  repository_dispatch:
+    types: [backup-request]
+
+env:
+  WORKER_URL: https://hybridprosaas-dashboard-production.meauxbility.workers.dev
+  CLOUDCONNECT_SECRET: ${{ secrets.CLOUDCONNECT }}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    name: Backup Repository to R2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for complete backup
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Detect tenant and bucket
+        id: detect
+        run: |
+          # Auto-detect tenant from repository name
+          REPO_NAME="${{ github.repository }}"
+          TENANT="${REPO_NAME#*/}"  # Extract repo name after owner/
+          
+          # Use provided tenant or auto-detect
+          if [ -n "${{ github.event.inputs.tenant }}" ]; then
+            TENANT="${{ github.event.inputs.tenant }}"
+          fi
+          
+          # Map tenant to R2 bucket
+          case "$TENANT" in
+            "meauxbility"|"meauxbility.org")
+              BUCKET="meauxbilitygithubconnect"
+              ;;
+            "inneranimalmedia-app-library")
+              BUCKET="inneranimalmedia-assets"
+              ;;
+            "autonomous-coding-agent")
+              BUCKET="autonomous-coding-agent"
+              ;;
+            *)
+              # Default: use tenant name with github suffix
+              BUCKET="${TENANT}-github-backup"
+              ;;
+          esac
+          
+          # Override with provided bucket
+          if [ -n "${{ github.event.inputs.bucket }}" ]; then
+            BUCKET="${{ github.event.inputs.bucket }}"
+          fi
+          
+          echo "tenant=$TENANT" >> $GITHUB_OUTPUT
+          echo "bucket=$BUCKET" >> $GITHUB_OUTPUT
+          echo "repo=$REPO_NAME" >> $GITHUB_OUTPUT
+          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+          echo "commit=${{ github.sha }}" >> $GITHUB_OUTPUT
+          
+          echo "📦 Tenant: $TENANT"
+          echo "🪣 Bucket: $BUCKET"
+          echo "📂 Repo: $REPO_NAME"
+
+      - name: Create backup archive
+        run: |
+          # Create timestamped backup
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BACKUP_NAME="${{ steps.detect.outputs.tenant }}-${TIMESTAMP}.tar.gz"
+          
+          # Create archive excluding .git (we'll backup separately if needed)
+          tar --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='.next' \
+              --exclude='dist' \
+              --exclude='build' \
+              --exclude='.cache' \
+              -czf "$BACKUP_NAME" .
+          
+          echo "backup_file=$BACKUP_NAME" >> $GITHUB_ENV
+          echo "📦 Created backup: $BACKUP_NAME"
+
+      - name: Upload backup to R2 via Worker API
+        run: |
+          WORKER_URL="${{ env.WORKER_URL }}"
+          SECRET="${{ env.CLOUDCONNECT_SECRET }}"
+          
+          # Upload backup via worker API
+          RESPONSE=$(curl -X POST \
+            -H "Authorization: Bearer $SECRET" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"tenant\": \"${{ steps.detect.outputs.tenant }}\",
+              \"bucket\": \"${{ steps.detect.outputs.bucket }}\",
+              \"repo\": \"${{ steps.detect.outputs.repo }}\",
+              \"branch\": \"${{ steps.detect.outputs.branch }}\",
+              \"commit\": \"${{ steps.detect.outputs.commit }}\",
+              \"backup_file\": \"${{ env.backup_file }}\",
+              \"action\": \"upload\"
+            }" \
+            "$WORKER_URL/api/github/backup" 2>&1)
+          
+          echo "Response: $RESPONSE"
+          
+          # If API upload fails, try direct wrangler upload
+          if echo "$RESPONSE" | grep -q "error\|Error\|401\|403"; then
+            echo "⚠️ API upload failed, trying direct wrangler upload..."
+            
+            # Install wrangler
+            npm install -g wrangler
+            
+            # Upload directly to R2
+            npx wrangler r2 object put "${{ steps.detect.outputs.bucket }}/backups/${{ env.backup_file }}" \
+              --file "${{ env.backup_file }}" \
+              --content-type "application/gzip" || true
+          fi
+
+      - name: Sync repository files to R2
+        run: |
+          # Install wrangler for direct R2 sync
+          npm install -g wrangler
+          
+          BUCKET="${{ steps.detect.outputs.bucket }}"
+          TENANT="${{ steps.detect.outputs.tenant }}"
+          REPO_PATH="repos/$TENANT/${{ steps.detect.outputs.branch }}"
+          
+          echo "🔄 Syncing files to R2: $BUCKET/$REPO_PATH"
+          
+          # Sync all files (excluding .git, node_modules, etc.)
+          find . -type f \
+            ! -path './.git/*' \
+            ! -path './node_modules/*' \
+            ! -path './.next/*' \
+            ! -path './dist/*' \
+            ! -path './build/*' \
+            ! -path './.cache/*' \
+            ! -name '*.log' \
+            ! -name '.DS_Store' \
+            | while read file; do
+              # Get relative path
+              REL_PATH="${file#./}"
+              
+              # Determine content type
+              case "$REL_PATH" in
+                *.js) CT="application/javascript; charset=utf-8" ;;
+                *.ts) CT="application/typescript; charset=utf-8" ;;
+                *.json) CT="application/json; charset=utf-8" ;;
+                *.html) CT="text/html; charset=utf-8" ;;
+                *.css) CT="text/css; charset=utf-8" ;;
+                *.png) CT="image/png" ;;
+                *.jpg|*.jpeg) CT="image/jpeg" ;;
+                *.svg) CT="image/svg+xml" ;;
+                *) CT="application/octet-stream" ;;
+              esac
+              
+              # Upload to R2
+              npx wrangler r2 object put "$BUCKET/$REPO_PATH/$REL_PATH" \
+                --file "$file" \
+                --content-type "$CT" || echo "⚠️ Failed to upload: $REL_PATH"
+            done
+          
+          echo "✅ Sync complete"
+
+      - name: Notify backup completion
+        if: always()
+        run: |
+          WORKER_URL="${{ env.WORKER_URL }}"
+          SECRET="${{ env.CLOUDCONNECT_SECRET }}"
+          
+          STATUS="success"
+          if [ "${{ job.status }}" != "success" ]; then
+            STATUS="failure"
+          fi
+          
+          # Send notification to worker
+          curl -X POST \
+            -H "Authorization: Bearer $SECRET" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"tenant\": \"${{ steps.detect.outputs.tenant }}\",
+              \"bucket\": \"${{ steps.detect.outputs.bucket }}\",
+              \"repo\": \"${{ steps.detect.outputs.repo }}\",
+              \"branch\": \"${{ steps.detect.outputs.branch }}\",
+              \"commit\": \"${{ steps.detect.outputs.commit }}\",
+              \"status\": \"$STATUS\",
+              \"action\": \"notify\"
+            }" \
+            "$WORKER_URL/api/github/backup/notify" || true
+          
+          echo "📧 Notification sent"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f "${{ env.backup_file }}" || true
+          echo "🧹 Cleanup complete"

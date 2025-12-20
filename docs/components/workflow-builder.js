@@ -5,6 +5,7 @@ export default function WorkflowBuilder() {
       <div class="workflow-header">
         <h2>Workflow Builder</h2>
         <div class="header-actions">
+          <button class="btn-secondary" id="guide-workflow-btn" style="background: rgba(34, 211, 238, 0.15); color: var(--cyan); border: 1px solid rgba(34, 211, 238, 0.3);">Guide Me</button>
           <button class="btn-secondary" id="save-workflow-btn">Save</button>
           <button class="btn-primary" id="run-workflow-btn">Run</button>
         </div>
@@ -400,22 +401,11 @@ document.getElementById('save-workflow-btn')?.addEventListener('click', async ()
 
 // Run workflow
 document.getElementById('run-workflow-btn')?.addEventListener('click', async () => {
-  if (nodes.length === 0) {
-    alert('Add nodes to your workflow first');
-    return;
-  }
+  // ... existing code ...
+});
 
-  try {
-    const res = await fetch('/api/workflows/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nodes, connections })
-    });
-
-    const result = await res.json();
-    alert('Workflow executed! Check console for results.');
-    console.log('Workflow result:', result);
-  } catch (error) {
-    alert('Error executing workflow: ' + error.message);
+document.getElementById('guide-workflow-btn')?.addEventListener('click', () => {
+  if (window.triggerMeauxPilot) {
+    window.triggerMeauxPilot("I'm ready to help you build this workflow. To begin, drag a 'Trigger' node onto the canvas. This will define how your pipeline starts—either manually, via a schedule, or from an incoming HTTP request.");
   }
 });
